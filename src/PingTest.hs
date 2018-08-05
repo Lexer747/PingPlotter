@@ -1,24 +1,24 @@
 module PingTest where
 
 import System.Process
+import System.Environment
+import Text.Regex.Posix
 import GHC.IO.Handle
-import Text.Regex
 
 
 ping :: String -> IO String
-ping s = readCreateProcess (proc ("ping \"" ++ s ++ "\" -n 1") []) ""
+ping s = readCreateProcess (proc pingExeStr [s, "-n", "1"]) ""
 
 parsePingString :: IO String -> IO String
 parsePingString s = do
                         result <- s
-                        putStrLn $ "parsePingString: \"" ++ result ++ "\""
-                        return $ case (matchRegexAll pingRegex result) of
-                                    Nothing -> "0"
-                                    Just (_,time,_,_) -> reverse $ drop 2 $ reverse $ drop 5 time
-                                    
-pingRegex :: Regex
-pingRegex = mkRegex "time[=<][0-9]+ms"
+                        let match = (result =~ groupRegex :: String) =~ countRegex :: String
+                        return match                                   
 
+[groupRegex, countRegex] = ["time[=<][0-9]+ms", "[0-9]+"]
+
+pingExeStr :: String
+pingExeStr = "C:\\Windows\\System32\\PING.EXE"
 
 pingInt :: String -> IO Int
 pingInt s = do 
@@ -28,5 +28,8 @@ pingInt s = do
     
     
 clear = system "cls"
-
           
+{-main = do
+        (host:_) <- getArgs
+        out <- pingInt host
+        putStrLn $ show out-}
