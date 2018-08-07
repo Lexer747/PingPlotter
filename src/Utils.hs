@@ -1,5 +1,5 @@
 module Utils (
-unique, right, left, divide, (//)
+    unique, right, left, divide, (//), getMinMax
 ) where
 
 import Data.List
@@ -27,3 +27,14 @@ left (x,_) = x
 divide :: Int -> Int -> Int
 divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
 (//) = divide
+
+-- takes a list an returns a tuple containing the smallest and largest element
+-- o(n) complexity
+getMinMax :: Ord a => [a] -> (a,a)
+getMinMax (x:xs) = getMinMax_ xs (x,x)
+
+getMinMax_ :: Ord a => [a] -> (a,a) -> (a,a)
+getMinMax_ (x:xs) (a,b) | x < a = getMinMax_ xs (x,b)
+getMinMax_ (x:xs) (a,b) | x > b = getMinMax_ xs (a,x)
+getMinMax_ (_:xs) acc           = getMinMax_  xs acc
+getMinMax_ [] acc               = acc

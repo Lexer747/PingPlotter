@@ -1,31 +1,8 @@
-module InternalGraph where
+module InternalGraph (toInternal) where
     
 import System.Console.Terminal.Size
-
+import GraphTypes
 import Utils
-
--- a graph structure
-data Graph a b = Graph {
-        maxX :: a, --the largest value the x-axis can be
-        minX :: a, --the smallest value the x-axis can be
-        maxY :: b, --the largest value the y-axis can be
-        minY :: b, --the smallest value the y-axis can be
-        title :: String, --the title of the graph
-        dataSet :: [(a,b)] -- the points in the graph
-    }
-        deriving (Show)
-            
--- a graph structure which also contains a another set of point which are the line segements for the original data set
-data InternalGraph a b c = InternalGraph {
-        imaxX :: a,
-        iminX :: a,
-        imaxY :: b,
-        iminY :: b,
-        ititle :: String,
-        idataSet :: [(a,b)],
-        ilineSet :: [([(a,b)], c)]
-    }
-        deriving (Show)
  
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.
 -- where x = cur, a = min, b = max, c = newMin, d = newMax, and the result is scaled x
@@ -34,25 +11,6 @@ normalize cur min max newMin newMax = (((newMax - newMin) * (cur - min)) / (max 
 
 normalizeInt :: Integral a => a -> a -> a -> a -> a -> a
 normalizeInt cur min max newMin newMax = (((newMax - newMin) * (cur - min)) `div` (max - min)) + newMin
-
---normalize a graph to a window size
-normalizeGraph :: InternalGraph Int Int Float -> Window Int -> InternalGraph Int Int Float
-normalizeGraph graph win =
-    InternalGraph {
-        iminX = (iminX graph),
-        imaxX = (imaxX graph),
-        iminY = (iminY graph),
-        imaxY = (imaxY graph),
-        ititle = (ititle graph),
-        idataSet = newDataSet,
-        ilineSet = newLineSet
-    }
-    where
-        h = height win
-        w = width win
-        f xs = normalizeSet h w (iminX graph) (imaxX graph) (iminY graph) (imaxY graph) xs
-        newDataSet = f (idataSet graph)
-        newLineSet = map (\(a,b) -> (f a, b)) (ilineSet graph)
         
 -- normalize a set of ints so that the new set has points scaled in x scaled between 0 and w, and y points are scaled between 0 and h
 -- h = new y max
@@ -62,30 +20,14 @@ normalizeGraph graph win =
 -- y = old min y
 -- y' = old max y
 -- set = list of (x,y) points
-normalizeSet :: Int -> Int -> Int -> Int -> Int -> Int -> [(Int,Int)] -> [(Int,Int)]
-normalizeSet h w x x' y y' set = map (\(n,m)-> ((normalizeInt n x x' 0 w), (normalizeInt m y y' 0 h))) set
-        
--- take a graph and scale it to be fit to the screen
-fitToScreen :: InternalGraph Int Int Float -> IO (Maybe (InternalGraph Int Int Float, Window Int))
-fitToScreen g = do
-                    s <- size
-                    case s of
-                        Just window -> return $ Just $ (normalizeGraph g window, window)
-                        Nothing -> return Nothing
+normalizeSet :: Fractional a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
+normalizeSet h w x x' y y' set = map (\(n,m)-> ((normalize n x x' 0 w), (normalize m y y' 0 h))) set
 
-toInternal :: Graph Int Int -> InternalGraph Int Int Float
-toInternal g = InternalGraph { 
-        iminX = (minX g),
-        imaxX = (maxX g),
-        iminY = (minY g),
-        imaxY = (maxY g),
-        ititle = (title g),
-        idataSet = (dataSet g),
-        ilineSet = getLines (dataSet g)
-    }
-   
-
-getLines :: [(Int,Int)] -> [([(Int,Int)], Float)]
+normalizeIntSet :: Integral a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
+normalizeIntSet h w x x' y y' set = map (\(n,m)-> ((normalizeInt n x x' 0 w), (normalizeInt m y y' 0 h))) set
+ 
+-- does getLinesPrecise but rounds the values and has a fixed step of 1
+getLines :: (RealFrac b, Enum b, Integral a) => [(a,a)] -> [([(a, a)], b)]
 getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b)) getPoints
     where
         getPoints = getLinesPrecise 1 toFloat
@@ -97,7 +39,7 @@ getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b))
 -- i.e. 
 --  > getLinesPrecise 1 [(1,1),(3,3)]
 --  > [([(2,2)], 1)] -- a single point is found, and the two points have a gradient of 1 between them
-getLinesPrecise :: Float -> [(Float,Float)] -> [([(Float,Float)], Float)]
+getLinesPrecise :: (Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
 getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise stepSize ((x',y'):xs))
     where
         points = xpoints ++ ypoints
@@ -107,5 +49,31 @@ getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise 
         f n = (n * m) + b
         b = y - (x * m)
         m = (y' - y) / (x' - x)
-getLinesPrecise _ (_:_) = []
-getLinesPrecise _ [] = []
+getLinesPrecise _ _ = []
+
+--Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
+--intermediate points to draw.
+toInternalPure ::(Fractional a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a a
+toInternalPure graph window = InternalGraph {
+        imaxX = (maxX graph),
+        iminX = (minX graph),
+        imaxY = (maxY graph),
+        iminY = (minY graph),
+        ititle = (title graph),
+        baseSet = (dataSet graph),
+        scaledSet = scaledSet,
+        lineSet = getLinesPrecise 1 scaledSet,
+        window = window
+    }
+    where 
+        h = fromIntegral $ height window
+        w = fromIntegral $ width window
+        scaledSet = normalizeSet h w (minX graph) (maxX graph) (minY graph) (maxY graph) (dataSet graph)
+
+-- take a graph and scale it to be fit to the screen
+toInternal :: (Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
+toInternal g = do
+                    s <- size
+                    case s of
+                        Just window -> return $ Just $ toInternalPure g window
+                        Nothing -> return Nothing

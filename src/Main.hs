@@ -2,12 +2,13 @@ module Main where
 
 import InternalGraph
 import GraphPlotter
-import Utils
 import PingTest
+import GraphBuild
 
 import Control.Monad
 import System.Environment
 
+{-
 main :: IO ()
 main = do
             x <- getArgs
@@ -69,3 +70,4 @@ addPingGraph ping g = Graph {
           coord = [(newX,ping)]
           newSet = if (length s) > maxSetSize then (drop 1 s) ++ coord else s ++ coord
           s = dataSet g
+-}

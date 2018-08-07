@@ -1,13 +1,12 @@
-module GraphPlotter where
+module GraphPlotter  where
 
 import System.Console.Terminal.Size
-
 import Data.List
-
 import InternalGraph
-import Constants
 import Utils
 
+
+{-
 drawGraph :: Graph Int Int -> IO ()
 drawGraph g = do
                 newG <- fitToScreen $ toInternal g
@@ -98,3 +97,4 @@ rmLookup _ [] = []
 
 p = idataSet printDemo
 l = ilineSet printDemo
+-}
