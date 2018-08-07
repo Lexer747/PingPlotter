@@ -1,12 +1,12 @@
 module Utils (
-    unique, right, left, divide, (//), getMinMax
+    unique, right, left, divide, (\\), getMinMax
 ) where
 
-import Data.List
+import Data.List (sort)
 
 --removes all duplicate elements from a list, ands sorts it
 --[1,2,2] -> [1,2]
---[1,2,1] -> [1,2]
+--[2,1,1] -> [1,2]
 unique :: Ord a => [a] -> [a]
 unique x = rm $ sort x
 
@@ -20,13 +20,17 @@ rm (x:y:xs)
     | x == y = rm (y:xs)
     | otherwise = x:(rm (y:xs))
 
+rmdup (x:xs) | x `elem` xs = rmdup xs
+             | otherwise   = x:(rmdup xs)
+rmdup []                   = []
+    
 right (_,x) = x
 left (x,_) = x
 
 --ceiling integer division
 divide :: Int -> Int -> Int
 divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
-(//) = divide
+(\\) = divide
 
 -- takes a list an returns a tuple containing the smallest and largest element
 -- o(n) complexity

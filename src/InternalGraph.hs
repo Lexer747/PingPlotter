@@ -2,6 +2,7 @@ module InternalGraph (toInternal) where
     
 import System.Console.Terminal.Size
 import GraphTypes
+import GraphBuild
 import Utils
  
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.
@@ -77,3 +78,9 @@ toInternal g = do
                     case s of
                         Just window -> return $ Just $ toInternalPure g window
                         Nothing -> return Nothing
+                        
+toInternalInt :: Graph Integer Integer -> IO (Maybe (InternalGraph Integer Integer Integer))
+toInternalInt g = undefined--toInternal $ editGraph (map test) g
+
+test :: (Integral a, Fractional b, Enum b) => (a,a) -> (b,b)
+test (x,y) = (fromIntegral x, fromIntegral y)

@@ -8,6 +8,7 @@ import GraphBuild
 import Control.Monad
 import System.Environment
 
+main = putStrLn "no"
 {-
 main :: IO ()
 main = do

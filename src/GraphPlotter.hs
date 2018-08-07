@@ -2,10 +2,36 @@ module GraphPlotter  where
 
 import System.Console.Terminal.Size
 import Data.List
+import Data.Array
 import InternalGraph
+import GraphTypes
 import Utils
 
+type Plot = Array Integer (Array Integer Char)
 
+blank = '.'
+
+--initalize an empty plot
+initPlot :: Window Integer -> Plot
+initPlot window = array (0,h) [ (i, (array (0,w) [(i,blank) | i <- [0..w]])) | i <- [0..h]]
+    where
+        (h,w) = (height window, width window)
+
+--convert a plot to a string which concatenates each row with a newline
+plotToPrintString :: Plot -> String
+plotToPrintString p = unlines $ map elems $ elems p
+
+--add a point with a representative char 
+addPointToPlot :: (Integer, Integer) -> Char -> Plot -> Plot
+addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
+    where xrow = plot ! y
+
+    
+addGraphToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
+addGraphToPlot plot graph = foldr (\x p -> addPointToPlot x 'X' p) plot (scaledSet graph)
+
+
+    
 {-
 drawGraph :: Graph Int Int -> IO ()
 drawGraph g = do

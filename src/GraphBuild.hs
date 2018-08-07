@@ -1,18 +1,15 @@
-module GraphBuild (
-    listToGraph,
-    namedListToGraph,
-) where
+module GraphBuild where
 
 import GraphTypes
 import Utils 
 
 --packs a list of (x,y) values into a graph object
-listToGraph :: (Ord a, Ord b) => [(a,b)] -> Graph a b
+listToGraph :: Ord a => [(a,a)] -> Graph a a
 listToGraph list = namedListToGraph list "untitled"
 
 --given a list and a title it will pack the list into a graph object, setting the default min and max value based
 --on the input of the list
-namedListToGraph :: (Ord a, Ord b) => [(a,b)] -> String -> Graph a b
+namedListToGraph :: Ord a => [(a,a)] -> String -> Graph a a
 namedListToGraph list name = Graph {
             maxX = xmax,
             minX = xmin,
@@ -27,7 +24,7 @@ namedListToGraph list name = Graph {
     (ymin, ymax) = getMinMax y
    
 -- edit the list of points in the graph with the function, and rebuild the constraint
-editGraph :: (Ord a, Ord b) => ([(a,b)] -> [(a,b)]) -> Graph a b -> Graph a b
+editGraph :: Ord a => ([(a,a)] -> [(a,a)]) -> Graph a a -> Graph a a
 editGraph func graph = namedListToGraph newSet (title graph)
     where 
         newSet = func (dataSet graph)
@@ -35,9 +32,11 @@ editGraph func graph = namedListToGraph newSet (title graph)
 -- some examples of edit graph:
 
 -- add a point to a graph
-addPoint :: (Ord a, Ord b) => (a,b) -> Graph a b -> Graph a b
+addPoint :: Ord a => (a,a) -> Graph a a -> Graph a a
 addPoint point = editGraph (++ [point])
 
 -- add a list of points to a graph
-addPoints :: (Ord a, Ord b) => [(a,b)] -> Graph a b -> Graph a b
+addPoints :: Ord a => [(a,a)] -> Graph a a -> Graph a a
 addPoints points = editGraph (++ points)
+
+demo = namedListToGraph (zip [20..29] [1..10]) "Demo"
