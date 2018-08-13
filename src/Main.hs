@@ -1,5 +1,6 @@
 module Main where
 
+import System.Console.Terminal.Size
 import InternalGraph
 import GraphPlotter
 import PingTest

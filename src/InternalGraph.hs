@@ -1,4 +1,4 @@
-module InternalGraph (toInternal) where
+module InternalGraph (toInternal, toInternalInt) where
     
 import System.Console.Terminal.Size
 import GraphTypes
@@ -74,13 +74,36 @@ toInternalPure graph window = InternalGraph {
 -- take a graph and scale it to be fit to the screen
 toInternal :: (Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
 toInternal g = do
-                    s <- size
-                    case s of
-                        Just window -> return $ Just $ toInternalPure g window
-                        Nothing -> return Nothing
+                s <- size
+                case s of
+                    Just window -> return $ Just $ toInternalPure g (adjustSize window)
+                    Nothing -> return Nothing
+                       
+-- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
+adjustSize :: Window Integer -> Window Integer
+adjustSize win = Window {height = h, width = w}
+    where h = (height win) - 1
+          w = (width win) - 1
                         
-toInternalInt :: Graph Integer Integer -> IO (Maybe (InternalGraph Integer Integer Integer))
-toInternalInt g = undefined--toInternal $ editGraph (map test) g
+toInternalIntHelp :: (Integral a, Fractional b, Ord b, Enum b) =>
+     Graph a a -> IO (Maybe (InternalGraph b b b))
+toInternalIntHelp g = toInternal $ editGraph (map (\(x,y) -> (fromIntegral x, fromIntegral y))) g
 
-test :: (Integral a, Fractional b, Enum b) => (a,a) -> (b,b)
-test (x,y) = (fromIntegral x, fromIntegral y)
+--Take an integer graph and scale it to fit to the screen
+toInternalInt :: (Integral a, RealFrac b, Enum b) => Graph a a -> IO (Maybe (InternalGraph a a b))
+toInternalInt g = do
+                    maybeInt <- internal
+                    case maybeInt of
+                        Nothing -> return Nothing
+                        Just int -> return $ Just (InternalGraph {
+                                imaxX = round (imaxX int),
+                                iminX = round (iminX int),
+                                imaxY = round (imaxY int),
+                                iminY = round (iminY int),
+                                ititle = (ititle int),
+                                baseSet = map (\(x,y) -> (round x, round y)) (baseSet int),
+                                scaledSet = map (\(x,y) -> (round x, round y)) (scaledSet int),
+                                lineSet = map (\(xs,c) -> (map (\(x,y) -> (round x, round y)) xs, c)) (lineSet int),
+                                window = (window int)
+                            })
+    where internal = (toInternalIntHelp g)

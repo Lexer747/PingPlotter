@@ -24,7 +24,7 @@ namedListToGraph list name = Graph {
     (ymin, ymax) = getMinMax y
    
 -- edit the list of points in the graph with the function, and rebuild the constraint
-editGraph :: Ord a => ([(a,a)] -> [(a,a)]) -> Graph a a -> Graph a a
+editGraph :: (Ord a, Ord b) => ([(a,a)] -> [(b,b)]) -> Graph a a -> Graph b b
 editGraph func graph = namedListToGraph newSet (title graph)
     where 
         newSet = func (dataSet graph)
@@ -39,4 +39,4 @@ addPoint point = editGraph (++ [point])
 addPoints :: Ord a => [(a,a)] -> Graph a a -> Graph a a
 addPoints points = editGraph (++ points)
 
-demo = namedListToGraph (zip [20..29] [1..10]) "Demo"
+demo = namedListToGraph (zip [1..100] [30,25,30,290,28,27,26,24,20,15,10,19,40,50,62,53,15,1000,43,2,27,29]) "Demo"
