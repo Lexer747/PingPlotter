@@ -47,17 +47,17 @@ getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b))
 getLinesPrecise :: (Ord a, Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
 getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise stepSize ((x',y'):xs))
     where
-        points = xpoints ++ ypoints
-        xpoints = if x < x' 
-                    then map (\n -> (n, f n)) [(x+stepSize),(x+(2*stepSize))..(x' - stepSize)] 
-                    else map (\n -> (n, f n)) [(x'+stepSize),(x'+(2*stepSize))..(x - stepSize)] 
-        ypoints = if y < y'
-                    then map (\n -> (g n, n)) [(y+stepSize),(y+(2*stepSize))..(y' - stepSize)]
-                    else map (\n -> (g n, n)) [(y'+stepSize),(y'+(2*stepSize))..(y - stepSize)]
-        g n = (n - b) / m
-        f n = (n * m) + b
-        b = y - (x * m)
-        m = (y' - y) / (x' - x)
+        points = xpoints ++ ypoints --combine all possible points which lie inbetween our original points
+        xpoints = map (\n -> (n, f n)) $ if x < x' --map our x = (y - c) / m over every point between our given points
+                    then [(x+stepSize),(x+(2*stepSize))..(x' - stepSize)] 
+                    else [(x'+stepSize),(x'+(2*stepSize))..(x - stepSize)] 
+        ypoints = map (\n -> (g n, n)) $ if y < y' --map our y = mx + c over every point between our given points
+                    then [(y+stepSize),(y+(2*stepSize))..(y' - stepSize)]
+                    else [(y'+stepSize),(y'+(2*stepSize))..(y - stepSize)]
+        g n = (n - b) / m -- x = (y - c) / m, where n is our y and g = x
+        f n = (n * m) + b -- y = mx + c, where n is our x and f = y
+        b = y - (x * m) --find the intersect (y = mx + c)
+        m = (y' - y) / (x' - x) --find the gradient (rise / run)
 getLinesPrecise _ _ = []
 
 --generates from a min max tuple, a list of points which represent that axis
@@ -66,8 +66,8 @@ getAxisPrecise X (min,max) numberOfPoints = map left $ left $ head $ getLinesPre
 getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
 
 xaxisGap, yaxisGap :: Num a => a
-xaxisGap = 8 
-yaxisGap = 4
+xaxisGap = 8 --the number of spaces between an interval
+yaxisGap = 4 --the number of spaces between an interval
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.

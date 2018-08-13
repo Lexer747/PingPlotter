@@ -41,5 +41,9 @@ addPoint point = editGraph (++ [point])
 addPoints :: Ord a => [(a,a)] -> Graph a a -> Graph a a
 addPoints points = editGraph (++ points)
 
---sample graph
-demo = namedListToGraph (zip [1..100] [50,1,50,1,50,1,50,1,50,1,50,1,50]) "Demo" ("x-points","y|points")
+--test graph
+demo = namedListToGraph (zip [1..50] [1,5,9,10,7,8,3,4,7,2,0,10]) "Demo" ("x-points","y|points")
+
+--sample graphs
+tanDemo = namedListToGraph (zip [1..50] (map (\x -> round $ (tan x) * 100) [0,0.2..])) "tan(x) * 100" ("x","y")
+sinDemo = namedListToGraph (zip [1..50] (map (\x -> round $ (sin x) * 100) [0,0.2..])) "sin(x) * 100" ("x","y")

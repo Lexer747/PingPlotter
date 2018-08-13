@@ -99,15 +99,13 @@ gradientToChar g = InternalGraph {
                    }
     
 gradient :: Double -> Char
-gradient _ = intrapunct -- TODO
-{-
-doesn't work great -_-
-gradient x | x >= 10 = '|'
-gradient x | x <= (-10) = '|'
+--doesn't work great -_-
+gradient x | x >= 8 = '|'
+gradient x | x <= (-8) = '|'
 gradient x | x >= 2 = '/'
 gradient x | x <= (-2) = '\\'
 gradient x = '-'
--}
+
 
 
 
