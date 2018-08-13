@@ -22,7 +22,7 @@ data Graph a b = Graph {
 instance (Show a, Show b) => Show (Graph a b) where
     show g = "Graph { \n   maxX = " ++ (show $ maxX g) ++ ", minX = " ++ (show $ minX g) ++ ", maxY = " ++ (show $ maxY g) ++ ", minY = " ++ (show $ minY g) ++ ",\n\
              \   title = " ++ (show $ title g) ++ ",\n\
-             \   axes = { " ++ (xAxis g) ++ ", " ++ (yAxis g) ++ "}, \n\ 
+             \   axes = {" ++ (show $ xAxis g) ++ ", " ++ (show $ yAxis g) ++ "}, \n\ 
              \   dataSet = " ++ (show $ dataSet g) ++ " \n}"
       
 -- a graph structure which also contains a another set of point which are the line segements for the original data set
@@ -50,8 +50,8 @@ instance (Show a, Show b, Show c) => Show (InternalGraph a b c) where
              \   title = " ++ (show $ ititle g) ++ ",\n\
              \   window = " ++ (show $ window g) ++ ", \n\
              \   baseSet = " ++ (show $ baseSet g) ++ ", \n\
-             \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (ixAxis g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
-             \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (iyAxis g) ++ "} = " ++ (show $ yAxisData             g) ++ ", \n\
+             \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (show $ ixAxis g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
+             \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (show $ iyAxis g) ++ "} = " ++ (show $ yAxisData             g) ++ ", \n\
              \   scaledSet = " ++ (show $ scaledSet g) ++ ", \n\
              \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n}"
              
