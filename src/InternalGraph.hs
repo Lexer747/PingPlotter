@@ -42,14 +42,18 @@ getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b))
 -- this function finds the gradient between consecutive points
 -- and between the two points will calculate intermediate points with a gap specified by the step size.
 -- i.e. 
---  > getLinesPrecise 1 [(1,1),(3,3)]
---  > [([(2,2)], 1)] -- a single point is found, and the two points have a gradient of 1 between them
-getLinesPrecise :: (Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
+--  > getLinesPrecise 1 [(1,1),(4,4)]
+--  > [([(2,2),(3,3)], 1)] -- 2 points are found, and the two points have a gradient of 1 between them
+getLinesPrecise :: (Ord a, Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
 getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise stepSize ((x',y'):xs))
     where
         points = xpoints ++ ypoints
-        xpoints = map (\n -> (n, f n)) [(x+stepSize),(x+(2*stepSize))..(x' - stepSize)] 
-        ypoints = map (\n -> (g n, n)) [(y+stepSize),(y+(2*stepSize))..(y' - stepSize)]
+        xpoints = if x < x' 
+                    then map (\n -> (n, f n)) [(x+stepSize),(x+(2*stepSize))..(x' - stepSize)] 
+                    else map (\n -> (n, f n)) [(x'+stepSize),(x'+(2*stepSize))..(x - stepSize)] 
+        ypoints = if y < y'
+                    then map (\n -> (g n, n)) [(y+stepSize),(y+(2*stepSize))..(y' - stepSize)]
+                    else map (\n -> (g n, n)) [(y'+stepSize),(y'+(2*stepSize))..(y - stepSize)]
         g n = (n - b) / m
         f n = (n * m) + b
         b = y - (x * m)
@@ -57,7 +61,7 @@ getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise 
 getLinesPrecise _ _ = []
 
 --generates from a min max tuple, a list of points which represent that axis
-getAxisPrecise :: (Fractional a, Enum a) => Axis -> (a,a) -> a -> [a]
+getAxisPrecise :: (Ord a, Fractional a, Enum a) => Axis -> (a,a) -> a -> [a]
 getAxisPrecise X (min,max) numberOfPoints = map left $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(min,0),(max,0)]
 getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
 
@@ -67,7 +71,7 @@ yaxisGap = 4
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure ::(Fractional a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a a
+toInternalPure ::(Ord a, Fractional a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a a
 toInternalPure graph window = InternalGraph {
         imaxX = (maxX graph),
         iminX = (minX graph),
@@ -89,7 +93,7 @@ toInternalPure graph window = InternalGraph {
         scaledSet = normalizeSet h w (minX graph) (maxX graph) (minY graph) (maxY graph) (dataSet graph)
 
 -- take a graph and scale it to be fit to the screen
-toInternal :: (Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
+toInternal :: (Ord a, Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
 toInternal g = do
                 s <- size
                 case s of
