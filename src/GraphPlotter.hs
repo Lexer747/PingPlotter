@@ -9,8 +9,10 @@ import Utils
 
 type Plot = Array Integer (Array Integer Char)
 
+-- chars used for the graph --
 intrapunct = '·' --a centralized point
-blank = ' '
+blank = ' ' -- a blank char
+------------------------------
 
 --initalize an empty plot
 initPlot :: Window Integer -> Plot
@@ -25,12 +27,21 @@ plotToPrintString p = unlines $ reverse $ map elems $ elems p
 addPointToPlot :: (Integer, Integer) -> Char -> Plot -> Plot
 addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
     where xrow = plot ! y
+    
+--adds a string to a plot, the first char starts at the specified point (x,y), and the last
+--char will be the at the point (x+len, y)
+addStringToPlot :: (Integer,Integer) -> String -> Plot -> Plot
+addStringToPlot (x,y) (c:cs) plot = addStringToPlot (x+1,y) cs (addPointToPlot (x,y) c plot)
+addStringToPlot _     []     plot = plot
+
+
 
     
 -- fold over every point in the graph and add them to a given plot
 addGraphToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
 addGraphToPlot plot graph = foldr (\x p -> addPointToPlot x 'X' p) plot (scaledSet graph)
 
+-- fold over the lineSet in the graph and add every point to the plot
 addGradientToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
 addGradientToPlot plot graph = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet graph)
 

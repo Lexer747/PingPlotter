@@ -40,4 +40,4 @@ addPoints :: Ord a => [(a,a)] -> Graph a a -> Graph a a
 addPoints points = editGraph (++ points)
 
 --sample graph with outliers
-demo = namedListToGraph (zip [1..100] [10]) "Demo"
+demo = namedListToGraph (zip [1..100] [1..20]) "Demo"
