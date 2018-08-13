@@ -35,7 +35,6 @@ addStringToPlot (x,y) (c:cs) plot = addStringToPlot (x+1,y) cs (addPointToPlot (
 addStringToPlot _     []     plot = plot
 
 
-
     
 -- fold over every point in the graph and add them to a given plot
 addGraphToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
@@ -55,20 +54,27 @@ gradientToChar g = InternalGraph {
                         iminY = iminY g,
                         ititle = (ititle g),
                         baseSet = (baseSet g),
+                        xAxis = (xAxis g),
+                        yAxis = (yAxis g),
                         scaledSet = (scaledSet g),
                         lineSet = map (\(x,c) -> (x, gradient c)) (lineSet g),
                         window = (window g)
                    }
     
 gradient :: Double -> Char
-gradient _ = intrapunct
+gradient _ = intrapunct -- TODO
 {-
+doesn't work great -_-
 gradient x | x >= 10 = '|'
 gradient x | x <= (-10) = '|'
 gradient x | x >= 2 = '/'
 gradient x | x <= (-2) = '\\'
 gradient x = '-'
 -}
+
+
+addAxisToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
+addAxisToPlot plot graph =                                                                    
 
 -- plot a graph
 graphToPlot :: Graph Integer Integer -> IO (Maybe Plot)

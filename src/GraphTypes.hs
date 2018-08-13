@@ -3,6 +3,7 @@ module GraphTypes
 where
 
 import System.Console.Terminal.Size
+import Utils (left, right)
 
 -- a graph structure
 data Graph a b = Graph {
@@ -30,6 +31,8 @@ data InternalGraph a b c = InternalGraph {
         iminY :: b,
         ititle :: String,
         baseSet :: [(a,b)],
+        xAxis :: (a,[(a,b)]),
+        yAxis :: (a,[(a,b)]),
         scaledSet :: [(a,b)],
         lineSet :: [([(a,b)], c)],
         window :: Window Integer
@@ -40,6 +43,8 @@ instance (Show a, Show b, Show c) => Show (InternalGraph a b c) where
              \   title = " ++ (show $ ititle g) ++ ",\n\
              \   window = " ++ (show $ window g) ++ ", \n\
              \   baseSet = " ++ (show $ baseSet g) ++ ", \n\
+             \   x-Axis [" ++ (show $ left $ xAxis g) ++ "] = " ++ (show $ right $ xAxis g) ++ ", \n\
+             \   y-Axis [" ++ (show $ left $ yAxis g) ++ "] = " ++ (show $ right $ yAxis g) ++ ", \n\
              \   scaledSet = " ++ (show $ scaledSet g) ++ ", \n\
              \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n}"
              

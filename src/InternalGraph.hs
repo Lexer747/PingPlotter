@@ -1,5 +1,5 @@
 module InternalGraph 
-    --(toInternal, toInternalInt) 
+    (toInternal, toInternalInt, axisGap) 
 where
     
 import System.Console.Terminal.Size
@@ -56,6 +56,15 @@ getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise 
         m = (y' - y) / (x' - x)
 getLinesPrecise _ _ = []
 
+--generates from a min max tuple, a list of points which represent that axis
+--bool => True = x-axis, False = y-axis
+getAxisPrecise :: (Fractional a, Enum a) => Bool -> (a,a) -> a -> [(a,a)]
+getAxisPrecise True (min,max) numberOfPoints = left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(min,0),(max,0)]
+getAxisPrecise False (min,max) numberOfPoints = map (\(_,y) -> (0,y)) $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
+
+axisGap :: Num a => a
+axisGap = 10
+
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
 toInternalPure ::(Fractional a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a a
@@ -66,6 +75,8 @@ toInternalPure graph window = InternalGraph {
         iminY = (minY graph),
         ititle = (title graph),
         baseSet = (dataSet graph),
+        xAxis = ((w / axisGap), getAxisPrecise True ((minX graph),(maxX graph)) (w / axisGap)),
+        yAxis = ((h / axisGap), getAxisPrecise False ((minY graph),(maxY graph)) (h / axisGap)),
         scaledSet = scaledSet,
         lineSet = getLinesPrecise 1 scaledSet,
         window = window
@@ -105,9 +116,14 @@ toInternalInt g = do
                                 imaxY = round (imaxY int),
                                 iminY = round (iminY int),
                                 ititle = (ititle int),
-                                baseSet = map (\(x,y) -> (round x, round y)) (baseSet int),
-                                scaledSet = map (\(x,y) -> (round x, round y)) (scaledSet int),
-                                lineSet = map (\(xs,c) -> (map (\(x,y) -> (round x, round y)) xs, c)) (lineSet int),
+                                baseSet = f (baseSet int), 
+                                xAxis = (fromIntegral $ length xaxis, xaxis),
+                                yAxis = (fromIntegral $ length yaxis, yaxis),
+                                scaledSet = f (scaledSet int),
+                                lineSet = map (\(xs,c) -> (f xs, c)) (lineSet int),
                                 window = (window int)
                             })
+                            where xaxis = f $ right (xAxis int)
+                                  yaxis = f $ right (yAxis int)
     where internal = (toInternalIntHelp g)
+          f = map (\(x,y) -> (round x, round y)) 
