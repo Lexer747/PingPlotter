@@ -1,4 +1,6 @@
-module GraphTypes where
+module GraphTypes 
+    (Graph(..), InternalGraph(..))
+where
 
 import System.Console.Terminal.Size
 
@@ -11,8 +13,12 @@ data Graph a b = Graph {
         title :: String, --the title of the graph
         dataSet :: [(a,b)] -- the points in the graph
     }
-        deriving (Show)
-            
+       
+instance (Show a, Show b) => Show (Graph a b) where
+    show g = "Graph { \n   maxX = " ++ (show $ maxX g) ++ ", minX = " ++ (show $ minX g) ++ ", maxY = " ++ (show $ maxY g) ++ ", minY = " ++ (show $ minY g) ++ ",\n\
+             \   title = " ++ (show $ title g) ++ ",\n\
+             \   dataSet = " ++ (show $ dataSet g) ++ " \n}"
+      
 -- a graph structure which also contains a another set of point which are the line segements for the original data set
 -- a = type of x-axis
 -- b = type of y-axis
@@ -28,4 +34,14 @@ data InternalGraph a b c = InternalGraph {
         lineSet :: [([(a,b)], c)],
         window :: Window Integer
     }
-        deriving (Show)
+
+instance (Show a, Show b, Show c) => Show (InternalGraph a b c) where
+    show g = "Internal Graph { \n   maxX = " ++ (show $ imaxX g) ++ ", minX = " ++ (show $ iminX g) ++ ", maxY = " ++ (show $ imaxY g) ++ ", minY = " ++ (show $ iminY g) ++ ",\n\
+             \   title = " ++ (show $ ititle g) ++ ",\n\
+             \   window = " ++ (show $ window g) ++ ", \n\
+             \   baseSet = " ++ (show $ baseSet g) ++ ", \n\
+             \   scaledSet = " ++ (show $ scaledSet g) ++ ", \n\
+             \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n}"
+             
+showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
+showLine = concatMap (\(xs, c) -> "      (" ++ (show xs) ++ ",\n     " ++ (show c) ++ ") \n\n")

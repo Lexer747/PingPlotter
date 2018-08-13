@@ -1,4 +1,6 @@
-module InternalGraph (toInternal, toInternalInt) where
+module InternalGraph 
+    --(toInternal, toInternalInt) 
+where
     
 import System.Console.Terminal.Size
 import GraphTypes
@@ -22,9 +24,11 @@ normalizeInt cur min max newMin newMax = (((newMax - newMin) * (cur - min)) `div
 -- y' = old max y
 -- set = list of (x,y) points
 normalizeSet :: Fractional a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
+normalizeSet h w _ _  _ _ (_:[]) = [(w/2,h/2)]
 normalizeSet h w x x' y y' set = map (\(n,m)-> ((normalize n x x' 0 w), (normalize m y y' 0 h))) set
 
 normalizeIntSet :: Integral a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
+normalizeIntSet h w _ _  _ _ (_:[]) = [(w `div` 2,h `div` 2)]
 normalizeIntSet h w x x' y y' set = map (\(n,m)-> ((normalizeInt n x x' 0 w), (normalizeInt m y y' 0 h))) set
  
 -- does getLinesPrecise but rounds the values and has a fixed step of 1

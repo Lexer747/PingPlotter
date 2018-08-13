@@ -28,7 +28,7 @@ right (_,x) = x
 left (x,_) = x
 
 --ceiling integer division
-divide :: Int -> Int -> Int
+divide :: Integral a => a -> a -> a
 divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
 (\\) = divide
 
