@@ -30,21 +30,23 @@ addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
     where xrow = plot ! y
     
 --adds a string to a plot, the first char starts at the specified point (x,y), and the last
---char will be the at the point (x+len, y)
-addStringToPlot :: (Integer,Integer) -> String -> Plot -> Plot
-addStringToPlot (x,y) (c:cs) plot = addStringToPlot (x+1,y) cs (addPointToPlot (x,y) c plot)
-addStringToPlot _     []     plot = plot
+--char will be the at the point (x+len, y) if X or (x,y-len) if Y
+addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
+addStringToPlot X (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
+addStringToPlot Y (x,y) (c:cs) plot = addStringToPlot Y (x,y-1) cs (addPointToPlot (x,y) c plot)
+addStringToPlot _ _     []     plot = plot
+
 
 -- add an individual axis to the plot
 addAxisToPlot :: Axis -> [Integer] -> Plot -> Plot
-addAxisToPlot X axis plot = foldr (\(str,point) p -> addStringToPlot point (show str) p)  plot points
+addAxisToPlot X axis plot = foldr (\(str,point) p -> addStringToPlot X point (show str) p)  plot points
     where points = zip axis (zip [3,(xaxisGap+3)..] [0,0..])
-addAxisToPlot Y axis plot = foldr (\(str,point) p -> addStringToPlot point (show str) p)  plot points
+addAxisToPlot Y axis plot = foldr (\(str,point) p -> addStringToPlot X point (show str) p)  plot points
     where points = zip axis (zip [0,0..] [3,(yaxisGap+3)..])
     
 -- add the numbers from the axis in the graph data to the plot
 addAxesToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
-addAxesToPlot plot graph = addAxisToPlot Y (yAxis graph) (addAxisToPlot X (xAxis graph) plot)
+addAxesToPlot plot graph = addAxisToPlot Y (yAxisData graph) (addAxisToPlot X (xAxisData graph) plot)
       
 -- add the blank '-' and '|' characters to each side of plot
 addBlankAxesToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
@@ -53,6 +55,13 @@ addBlankAxesToPlot plot graph = addPointToPlot (0,0) '+' base1
           base0 = foldr (\x p -> addPointToPlot x '-' p) plot (zip [0..w] [0,0..])
           w = width $ window graph
           h = height $ window graph
+          
+-- add the names of the axes to the graph, x horizontally to the end of the axis, and y vertically to the top of axis
+addAxesNameToPlot:: Plot -> InternalGraph Integer Integer a -> Plot
+addAxesNameToPlot plot graph = addStringToPlot Y (yGap, (height $ window graph)) (iyAxis graph) base0
+    where base0 = addStringToPlot X ((width $ window graph) - (fromIntegral $ length $ ixAxis graph),1) (ixAxis graph) plot
+          yGap = fromIntegral $ length $ show $ foldr max 0 (yAxisData graph)
+    
     
 -- fold over every point in the graph and add them to a given plot
 addGraphToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
@@ -63,12 +72,12 @@ addGradientToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
 addGradientToPlot plot graph = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet graph)
 
 addTitleToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
-addTitleToPlot plot graph = addStringToPlot mid (ititle graph) plot
+addTitleToPlot plot graph = addStringToPlot X mid (ititle graph) plot
     where mid = (((width $ window graph) `div` 2) - (fromIntegral $ length (ititle graph) `div` 2), (height $ window graph) - 1)
 
 -- combine all the add functions into one function to fill and blank plot with a graph
 populateGraph :: Plot -> InternalGraph Integer Integer Char -> Plot
-populateGraph p g = addTitleToPlot (addAxesToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g
+populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g) g
 
 -- map over the gradient in the line set converting gradients to  char to represent 
 -- the gradient we have replaced
@@ -80,8 +89,10 @@ gradientToChar g = InternalGraph {
                         iminY = iminY g,
                         ititle = (ititle g),
                         baseSet = (baseSet g),
-                        xAxis = (xAxis g),
-                        yAxis = (yAxis g),
+                        ixAxis = (ixAxis g),
+                        iyAxis = (iyAxis g),
+                        xAxisData = (xAxisData g),
+                        yAxisData = (yAxisData g),
                         scaledSet = (scaledSet g),
                         lineSet = map (\(x,c) -> (x, gradient c)) (lineSet g),
                         window = (window g)
