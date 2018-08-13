@@ -1,5 +1,5 @@
 module InternalGraph 
-    (toInternal, toInternalInt, axisGap) 
+    --(toInternal, toInternalInt, xaxisGap, yaxisGap) 
 where
     
 import System.Console.Terminal.Size
@@ -48,8 +48,8 @@ getLinesPrecise :: (Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
 getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise stepSize ((x',y'):xs))
     where
         points = xpoints ++ ypoints
-        xpoints = map (\n -> (n, f n)) [(x+1),(x+1+stepSize)..(x' - 1)] 
-        ypoints = map (\n -> (g n, n)) [(y+1),(y+1+stepSize)..(y' - 1)]
+        xpoints = map (\n -> (n, f n)) [(x+stepSize),(x+(2*stepSize))..(x' - stepSize)] 
+        ypoints = map (\n -> (g n, n)) [(y+stepSize),(y+(2*stepSize))..(y' - stepSize)]
         g n = (n - b) / m
         f n = (n * m) + b
         b = y - (x * m)
@@ -61,8 +61,9 @@ getAxisPrecise :: (Fractional a, Enum a) => Axis -> (a,a) -> a -> [a]
 getAxisPrecise X (min,max) numberOfPoints = map left $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(min,0),(max,0)]
 getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
 
-axisGap :: Num a => a
-axisGap = 10
+xaxisGap, yaxisGap :: Num a => a
+xaxisGap = 8 
+yaxisGap = 4
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
@@ -74,8 +75,8 @@ toInternalPure graph window = InternalGraph {
         iminY = (minY graph),
         ititle = (title graph),
         baseSet = (dataSet graph),
-        xAxis = (getAxisPrecise X ((minX graph),(maxX graph)) (w / axisGap)),
-        yAxis = (getAxisPrecise Y ((minY graph),(maxY graph)) (h / axisGap)),
+        xAxis = (getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
+        yAxis = (getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
         scaledSet = scaledSet,
         lineSet = getLinesPrecise 1 scaledSet,
         window = window
