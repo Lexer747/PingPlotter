@@ -3,6 +3,7 @@ module GraphPlotter  where
 import System.Console.Terminal.Size
 import Data.List
 import Data.Array
+import Data.Maybe (fromJust)
 import InternalGraph
 import GraphTypes
 import Utils
@@ -34,10 +35,17 @@ addStringToPlot :: (Integer,Integer) -> String -> Plot -> Plot
 addStringToPlot (x,y) (c:cs) plot = addStringToPlot (x+1,y) cs (addPointToPlot (x,y) c plot)
 addStringToPlot _     []     plot = plot
 
-
+addAxisToPlot :: Axis -> [Integer] -> Plot -> Plot
+addAxisToPlot X axis plot = foldr (\(str,point) p -> addStringToPlot point (show str) p)  plot points
+    where points = zip axis (zip [0,axisGap..] [0,0..])
+addAxisToPlot Y axis plot = foldr (\(str,point) p -> addStringToPlot point (show str) p)  plot points
+    where points = zip axis (zip [0,0..] [0,axisGap..])
+    
+addAxesToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
+addAxesToPlot plot graph = addAxisToPlot Y (yAxis graph) (addAxisToPlot X (xAxis graph) plot)
     
 -- fold over every point in the graph and add them to a given plot
-addGraphToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
+addGraphToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
 addGraphToPlot plot graph = foldr (\x p -> addPointToPlot x 'X' p) plot (scaledSet graph)
 
 -- fold over the lineSet in the graph and add every point to the plot
@@ -73,8 +81,9 @@ gradient x = '-'
 -}
 
 
-addAxisToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
-addAxisToPlot plot graph =                                                                    
+
+    
+
 
 -- plot a graph
 graphToPlot :: Graph Integer Integer -> IO (Maybe Plot)
@@ -84,10 +93,15 @@ graphToPlot g = do
                                          --and inbetween points
                     case maybeInt of
                         Nothing -> return Nothing
-                        Just int -> return $ Just $ addGraphToPlot (addGradientToPlot plot graph) graph --add all the points to the plot
+                        Just int -> return $ Just $ addAxesToPlot (addGraphToPlot (addGradientToPlot plot graph) graph) graph --add all the points to the plot
                             where graph = gradientToChar int --convert the gradients to chars
                                   plot = initPlot (window graph) --initalize an empty plot
     where internal = toInternalInt g
+    
+unsafe_graphToPlot :: Graph Integer Integer -> IO (Plot)
+unsafe_graphToPlot g = do
+                            maybeG <- graphToPlot g
+                            return $ fromJust maybeG
     
 graphPrint :: Graph Integer Integer -> IO ()
 graphPrint g = do
