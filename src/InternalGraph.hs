@@ -43,7 +43,7 @@ getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b))
 -- and between the two points will calculate intermediate points with a gap specified by the step size.
 -- i.e. 
 --  > getLinesPrecise 1 [(1,1),(4,4)]
---  > [([(2,2),(3,3)], 1)] -- 2 points are found, and the two points have a gradient of 1 between them
+--  > [([(2,2),(3,3)], 1)] -- 2 points are found, and the two original points have a gradient of 1 between them
 getLinesPrecise :: (Ord a, Fractional a, Enum a) => a -> [(a,a)] -> [([(a,a)], a)]
 getLinesPrecise stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLinesPrecise stepSize ((x',y'):xs))
     where
@@ -71,7 +71,7 @@ yaxisGap = 4 --the number of spaces between an interval
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure ::(Ord a, Fractional a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a a
+--toInternalPure :: (Ord a, Fractional a, Enum a, Ord b, Fractional b, Enum b) => Graph a b -> Window Integer -> InternalGraph a b c
 toInternalPure graph window = InternalGraph {
         imaxX = (maxX graph),
         iminX = (minX graph),
@@ -93,7 +93,7 @@ toInternalPure graph window = InternalGraph {
         scaledSet = normalizeSet h w (minX graph) (maxX graph) (minY graph) (maxY graph) (dataSet graph)
 
 -- take a graph and scale it to be fit to the screen
-toInternal :: (Ord a, Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
+--toInternal :: (Ord a, Fractional a, Enum a) => Graph a a -> IO (Maybe (InternalGraph a a a))
 toInternal g = do
                 s <- size
                 case s of
@@ -106,12 +106,11 @@ adjustSize win = Window {height = h, width = w}
     where h = (height win) - 1
           w = (width win) - 1
                         
-toInternalIntHelp :: (Integral a, Fractional b, Ord b, Enum b) =>
-     Graph a a -> IO (Maybe (InternalGraph b b b))
+--toInternalIntHelp :: (Integral a, Fractional b, Ord b, Enum b) => Graph a a -> IO (Maybe (InternalGraph b b b))
 toInternalIntHelp g = toInternal $ editGraph (map (\(x,y) -> (fromIntegral x, fromIntegral y))) g
 
 --Take an integer graph and scale it to fit to the screen
-toInternalInt :: (Integral a, RealFrac b, Enum b) => Graph a a -> IO (Maybe (InternalGraph a a b))
+--toInternalInt :: (Integral a, RealFrac b, Enum b) => Graph a a -> IO (Maybe (InternalGraph a a b))
 toInternalInt g = do
                     maybeInt <- internal
                     case maybeInt of
