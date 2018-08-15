@@ -73,17 +73,10 @@ yaxisGap = 4 --the number of spaces between an interval
 --intermediate points to draw.
 --toInternalPure :: (Ord a, Fractional a, Enum a, Ord b, Fractional b, Enum b) => Graph a b -> Window Integer -> InternalGraph a b c
 toInternalPure graph window = InternalGraph {
-        imaxX = (maxX graph),
-        iminX = (minX graph),
-        imaxY = (maxY graph),
-        iminY = (minY graph),
-        ititle = (title graph),
-        baseSet = (dataSet graph),
-        ixAxis = (xAxis graph),
-        iyAxis = (yAxis graph),
-        xAxisData = (getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
-        yAxisData = (getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
-        scaledSet = scaledSet,
+        graph = graph,
+        xAxisData = [] --(getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
+        yAxisData = [] --(getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
+        plottingSet = scaledSet,
         lineSet = getLinesPrecise 1 scaledSet,
         window = window
     }
@@ -111,7 +104,7 @@ toInternalIntHelp g = toInternal $ editGraph (map (\(x,y) -> (fromIntegral x, fr
 
 --Take an integer graph and scale it to fit to the screen
 --toInternalInt :: (Integral a, RealFrac b, Enum b) => Graph a a -> IO (Maybe (InternalGraph a a b))
-toInternalInt g = do
+{-toInternalInt g = do
                     maybeInt <- internal
                     case maybeInt of
                         Nothing -> return Nothing
@@ -131,4 +124,4 @@ toInternalInt g = do
                                 window = (window int)
                             })
     where internal = (toInternalIntHelp g)
-          f = map (\(x,y) -> (round x, round y)) 
+          f = map (\(x,y) -> (round x, round y)) -}

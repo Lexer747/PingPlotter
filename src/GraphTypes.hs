@@ -29,30 +29,23 @@ instance (Show a, Show b) => Show (Graph a b) where
 -- a = type of x-axis
 -- b = type of y-axis
 -- c = type of calculated gradient
-data InternalGraph a b c = InternalGraph {
-        imaxX :: a,
-        iminX :: a,
-        imaxY :: b,
-        iminY :: b,
-        ititle :: String,
-        baseSet :: [(a,b)],
+data InternalGraph a b = InternalGraph {
+        graph :: Graph a b,
         xAxisData :: [a],
         yAxisData :: [b],
-        ixAxis :: String,
-        iyAxis :: String,
-        scaledSet :: [(a,b)],
-        lineSet :: [([(a,b)], c)],
+        plottingSet :: [(Integer,Integer)],
+        lineSet :: [([(Integer,Integer)], Char)],
         window :: Window Integer
     }
 
-instance (Show a, Show b, Show c) => Show (InternalGraph a b c) where
-    show g = "Internal Graph { \n   maxX = " ++ (show $ imaxX g) ++ ", minX = " ++ (show $ iminX g) ++ ", maxY = " ++ (show $ imaxY g) ++ ", minY = " ++ (show $ iminY g) ++ ",\n\
-             \   title = " ++ (show $ ititle g) ++ ",\n\
+instance (Show a, Show b) => Show (InternalGraph a b) where
+    show g = "Internal Graph { \n   maxX = " ++ (show $ maxX $ graph g) ++ ", minX = " ++ (show $ minX $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ",\n\
+             \   title = " ++ (show $ title $ graph g) ++ ",\n\
              \   window = " ++ (show $ window g) ++ ", \n\
-             \   baseSet = " ++ (show $ baseSet g) ++ ", \n\
-             \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (show $ ixAxis g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
-             \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (show $ iyAxis g) ++ "} = " ++ (show $ yAxisData             g) ++ ", \n\
-             \   scaledSet = " ++ (show $ scaledSet g) ++ ", \n\
+             \   dataSet = " ++ (show $ dataSet $ graph g) ++ ", \n\
+             \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (show $ xAxis $ graph g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
+             \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (show $ yAxis $ graph g) ++ "} = " ++ (show $ yAxisData g) ++ ", \n\
+             \   scaledSet = " ++ (show $ plottingSet g) ++ ", \n\
              \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n}"
              
 showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
