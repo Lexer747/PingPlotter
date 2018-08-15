@@ -20,7 +20,7 @@ parsePingString s = do
 pingExeStr :: String
 pingExeStr = "C:\\Windows\\System32\\PING.EXE"
 
-pingInt :: String -> IO Int
+pingInt :: String -> IO Integer
 pingInt s = do 
                 n <- p
                 return $ read n

@@ -1,7 +1,7 @@
 module GraphBuild where
 
 import GraphTypes
-import Utils 
+import Utils
 
 --packs a list of (x,y) values into a graph object
 listToGraph :: Ord a => [(a,a)] -> Graph a a
@@ -40,10 +40,3 @@ addPoint point = editGraph (++ [point])
 -- add a list of points to a graph
 addPoints :: Ord a => [(a,a)] -> Graph a a -> Graph a a
 addPoints points = editGraph (++ points)
-
---test graph
-demo = namedListToGraph (zip [1..50] [1,5,9,10,7,8,3,4,7,2,0,10]) "Demo" ("x-points","y|points")
-
---sample graphs
-tanDemo = namedListToGraph (zip [1..50] (map (\x -> round $ (tan x) * 100) [0,0.2..])) "tan(x) * 100" ("x","y")
-sinDemo = namedListToGraph (zip [1..50] (map (\x -> round $ (sin x) * 100) [0,0.2..])) "sin(x) * 100" ("x","y")

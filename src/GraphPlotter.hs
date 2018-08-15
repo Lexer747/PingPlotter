@@ -107,10 +107,7 @@ gradient x | x <= (-2) = '\\'
 gradient x = '-'
 
 
-
-
-    
-
+----------------------------------------------------------------
 
 -- plot a graph
 graphToPlot :: Graph Integer Integer -> IO (Maybe Plot)

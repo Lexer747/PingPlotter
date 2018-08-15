@@ -36,6 +36,7 @@ divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
 -- o(n) complexity
 getMinMax :: Ord a => [a] -> (a,a)
 getMinMax (x:xs) = getMinMax_ xs (x,x)
+getMinMax [] = error "empty list passed to getMinMax"
 
 getMinMax_ :: Ord a => [a] -> (a,a) -> (a,a)
 getMinMax_ (x:xs) (a,b) | x < a = getMinMax_ xs (x,b)

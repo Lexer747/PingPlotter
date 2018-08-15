@@ -1,5 +1,5 @@
 module InternalGraph 
-    --(toInternal, toInternalInt, xaxisGap, yaxisGap) 
+    (toInternal, toInternalInt, xaxisGap, yaxisGap) 
 where
     
 import System.Console.Terminal.Size

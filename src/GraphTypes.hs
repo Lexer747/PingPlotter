@@ -37,7 +37,7 @@ data InternalGraph a b c = InternalGraph {
         ititle :: String,
         baseSet :: [(a,b)],
         xAxisData :: [a],
-        yAxisData :: [a],
+        yAxisData :: [b],
         ixAxis :: String,
         iyAxis :: String,
         scaledSet :: [(a,b)],
