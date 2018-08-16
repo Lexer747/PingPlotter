@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric
 ) where
 
 import Data.List (sort)
@@ -43,3 +43,17 @@ getMinMax_ (x:xs) (a,b) | x < a = getMinMax_ xs (x,b)
 getMinMax_ (x:xs) (a,b) | x > b = getMinMax_ xs (a,x)
 getMinMax_ (_:xs) acc           = getMinMax_  xs acc
 getMinMax_ [] acc               = acc
+
+symmetric :: (a -> b) -> (a,a) -> (b,b)
+symmetric f (x,y) = (f x,f y)
+
+asymmetric :: (a -> c) -> (b -> d) -> (a,b) -> (c,d)
+asymmetric f w (x,y)= (f x,w y)
+
+--mapSymmetric, given a function map it symmetrically to both sides of a tupled list
+mapS :: (a -> b) -> [(a, a)] -> [(b, b)]
+mapS f xs = map (symmetric f) xs
+
+--mapAsymmetric, given two different functions map each one to its own half of a tupled list
+mapA:: (a -> c) -> (b -> d) -> [(a, b)] -> [(c, d)]
+mapA f w xs = map (asymmetric f w) xs

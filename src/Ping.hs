@@ -49,6 +49,7 @@ instance RealFrac TimeStamp where
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
     
+--get the current posix time
 getTimeStamp :: IO TimeStamp
 getTimeStamp = do
                    t <- getPOSIXTime
@@ -56,28 +57,33 @@ getTimeStamp = do
     
 type Ping = (TimeStamp, Integer)
 
+--given two starting pings create a graph with all the defaults set correctly
 initGraph :: Ping -> Ping -> String ->  Graph TimeStamp Integer
 initGraph p0 p1 host = namedListToGraph [p0,p1] host ("Date", "Ping (ms)") 
 
+--ping a host
 getPing :: String -> IO Ping
 getPing host = do
                   t <- getTimeStamp
                   p <- pingInt host
                   return (t,p)
                   
-                  
+            
+--given a host name initalize a graph with two pings            
 getInitGraph :: String -> IO (Graph TimeStamp Integer)
 getInitGraph host = do
                         p0 <- getPing host
                         p1 <- getPing host
                         return $ initGraph p0 p1 host
-                        
+           
+--given a graph created by 'initGraph' add another ping to its set          
 addPing :: IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
 addPing graph = do
                     g <- graph
                     p <- getPing $ title g
                     return $ addPoint p g
-                    
+       
+       
 testGraph = addPing $ addPing $ addPing $ addPing $ addPing $ addPing $ getInitGraph "www.google.com"
 fakeGraph :: Graph TimeStamp Integer
 fakeGraph = Graph {

@@ -31,8 +31,8 @@ instance (Show a, Show b) => Show (Graph a b) where
 -- c = type of calculated gradient
 data InternalGraph a b = InternalGraph {
         graph :: Graph a b,
-        xAxisData :: [a],
-        yAxisData :: [b],
+        xAxisData :: [(Integer,a)],
+        yAxisData :: [(Integer,b)],
         plottingSet :: [(Integer,Integer)],
         lineSet :: [([(Integer,Integer)], Char)],
         window :: Window Integer
