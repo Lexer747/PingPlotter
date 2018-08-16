@@ -11,10 +11,7 @@ import Utils
 -- where x = cur, a = min, b = max, c = newMin, d = newMax, and the result is scaled x
 normalize :: Fractional a => a -> a -> a -> a -> a -> a
 normalize cur min max newMin newMax = (((newMax - newMin) * (cur - min)) / (max - min)) + newMin
-
-normalizeInt :: Integral a => a -> a -> a -> a -> a -> a
-normalizeInt cur min max newMin newMax = (((newMax - newMin) * (cur - min)) `div` (max - min)) + newMin
-        
+  
 -- normalize a set of ints so that the new set has points scaled in x scaled between 0 and w, and y points are scaled between 0 and h
 -- h = new y max
 -- w = new x max
@@ -26,17 +23,6 @@ normalizeInt cur min max newMin newMax = (((newMax - newMin) * (cur - min)) `div
 normalizeSet :: Fractional a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
 normalizeSet h w _ _  _ _ (_:[]) = [(w/2,h/2)]
 normalizeSet h w x x' y y' set = map (\(n,m)-> ((normalize n x x' 0 w), (normalize m y y' 0 h))) set
-
-normalizeIntSet :: Integral a => a -> a -> a -> a -> a -> a -> [(a,a)] -> [(a,a)]
-normalizeIntSet h w _ _  _ _ (_:[]) = [(w `div` 2,h `div` 2)]
-normalizeIntSet h w x x' y y' set = map (\(n,m)-> ((normalizeInt n x x' 0 w), (normalizeInt m y y' 0 h))) set
- 
--- does getLinesPrecise but rounds the values and has a fixed step of 1
-getLines :: (RealFrac b, Enum b, Integral a) => [(a,a)] -> [([(a, a)], b)]
-getLines xs = map (\(a,b) -> (unique $ map (\(x,y) -> (round x, round y)) a, b)) getPoints
-    where
-        getPoints = getLinesPrecise 1 toFloat
-        toFloat = map (\(x,y) -> (fromIntegral x, fromIntegral y)) xs
 
 -- given a step size >0, and a list of points
 -- this function finds the gradient between consecutive points
@@ -98,30 +84,3 @@ adjustSize :: Window Integer -> Window Integer
 adjustSize win = Window {height = h, width = w}
     where h = (height win) - 1
           w = (width win) - 1
-                        
---toInternalIntHelp :: (Integral a, Fractional b, Ord b, Enum b) => Graph a a -> IO (Maybe (InternalGraph b b b))
-toInternalIntHelp g = toInternal $ editGraph (map (\(x,y) -> (fromIntegral x, fromIntegral y))) g
-
---Take an integer graph and scale it to fit to the screen
---toInternalInt :: (Integral a, RealFrac b, Enum b) => Graph a a -> IO (Maybe (InternalGraph a a b))
-{-toInternalInt g = do
-                    maybeInt <- internal
-                    case maybeInt of
-                        Nothing -> return Nothing
-                        Just int -> return $ Just (InternalGraph {
-                                imaxX = round (imaxX int),
-                                iminX = round (iminX int),
-                                imaxY = round (imaxY int),
-                                iminY = round (iminY int),
-                                ititle = (ititle int),
-                                baseSet = f (baseSet int),
-                                ixAxis = (ixAxis int),
-                                iyAxis = (iyAxis int),
-                                xAxisData = map round (xAxisData int),
-                                yAxisData = map round (yAxisData int),
-                                scaledSet = f (scaledSet int),
-                                lineSet = map (\(xs,c) -> (f xs, c)) (lineSet int),
-                                window = (window int)
-                            })
-    where internal = (toInternalIntHelp g)
-          f = map (\(x,y) -> (round x, round y)) -}
