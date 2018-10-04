@@ -1,5 +1,5 @@
 module InternalGraph 
-    --(toInternal, toInternalInt, xaxisGap, yaxisGap) 
+        --(toInternal) 
 where
     
 import System.Console.Terminal.Size
@@ -52,13 +52,10 @@ getAxisPrecise :: (Ord a, Fractional a, Enum a) => Axis -> (a,a) -> a -> [a]
 getAxisPrecise X (min,max) numberOfPoints = map left $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(min,0),(max,0)]
 getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
 -}
-xaxisGap, yaxisGap :: Num a => a
-xaxisGap = 8 --the number of spaces between an interval
-yaxisGap = 4 --the number of spaces between an interval
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure :: (RealFrac a, Ord a, Enum a) => Graph a a -> Window Integer -> InternalGraph a a
+toInternalPure :: (GraphData a, GraphData b) => Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure g window = InternalGraph {
         graph = g,
         xAxisData = [], --(getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
@@ -70,25 +67,7 @@ toInternalPure g window = InternalGraph {
     where 
         h = fromIntegral $ height window
         w = fromIntegral $ width window
-        scaledSet = normalizeSet h w (minX g) (maxX g) (minY g) (maxY g) (dataSet g)
-
-        
-        
--- take a graph and scale it to be fit to the screen
-{-
-toInternal :: (Ord a, Fractional a, Enum a, Ord b, Fractional b, Enum b) => Graph a b -> IO (Maybe (InternalGraph a b))
-toInternal g = do
-                s <- size
-                case s of
-                    Just window -> return $ Just $ toInternalPure g (adjustSize window)
-                    Nothing -> return Nothing
-                       
--}
--- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
-adjustSize :: Window Integer -> Window Integer
-adjustSize win = Window {height = h, width = w}
-    where h = (height win) - 1
-          w = (width win) - 1
+        scaledSet = normalizeSet h w (convert $ minX g) (convert $ maxX g) (convert $ minY g) (convert $ maxY g) (mapA convert convert $ dataSet g)
 
 gradient :: RealFrac a => a -> Char
 --doesn't work great -_-
@@ -96,4 +75,19 @@ gradient x | x >= 8 = '|'
 gradient x | x <= (-8) = '|'
 gradient x | x >= 2 = '/'
 gradient x | x <= (-2) = '\\'
-gradient x = '-'
+gradient x = '-'  
+        
+-- take a graph and scale it to be fit to the screen
+toInternal :: (GraphData a, GraphData b) => Graph a b -> IO (Maybe (InternalGraph a b))
+toInternal g = do
+                s <- size
+                case s of
+                    Just window -> return $ Just $ toInternalPure g (adjustSize window)
+                    Nothing -> return Nothing
+                       
+-- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
+adjustSize :: Window Integer -> Window Integer
+adjustSize win = Window {height = h, width = w}
+    where h = (height win) - 1
+          w = (width win) - 1
+

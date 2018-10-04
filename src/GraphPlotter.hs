@@ -1,4 +1,4 @@
-module GraphPlotter  where
+module GraphPlotter where
 
 import System.Console.Terminal.Size
 import Data.List
@@ -38,74 +38,46 @@ addStringToPlot _ _     []     plot = plot
 
 
 -- add an individual axis to the plot
-addAxisToPlot :: Axis -> [Integer] -> Plot -> Plot
-addAxisToPlot X axis plot = foldr (\(str,point) p -> addStringToPlot X point (show str) p)  plot points
-    where points = zip axis (zip [3,(xaxisGap+3)..] [0,0..])
-addAxisToPlot Y axis plot = foldr (\(str,point) p -> addStringToPlot X point (show str) p)  plot points
-    where points = zip axis (zip [0,0..] [3,(yaxisGap+3)..])
+addAxisToPlot :: (Show a) => Axis -> [(Integer, a)] -> Plot -> Plot
+addAxisToPlot X axis plot = foldr (\(point,str) p -> addStringToPlot X point (show str) p)  plot points
+    where points = map (\(x, a) -> ((x,0), a)) axis
+addAxisToPlot Y axis plot = foldr (\(point,str) p -> addStringToPlot Y point (show str) p)  plot points
+    where points = map (\(y, a) -> ((0,y), a)) axis
     
 -- add the numbers from the axis in the graph data to the plot
-addAxesToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
-addAxesToPlot plot graph = addAxisToPlot Y (yAxisData graph) (addAxisToPlot X (xAxisData graph) plot)
+addAxesToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addAxesToPlot plot g = addAxisToPlot Y (yAxisData g) (addAxisToPlot X (xAxisData g) plot)
       
 -- add the blank '-' and '|' characters to each side of plot
-addBlankAxesToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
-addBlankAxesToPlot plot graph = addPointToPlot (0,0) '+' base1
+addBlankAxesToPlot :: Plot -> InternalGraph a b -> Plot
+addBlankAxesToPlot plot g = addPointToPlot (0,0) '+' base1
     where base1 = foldr (\x p -> addPointToPlot x '|' p) base0 (zip [0,0..] [0..h])
           base0 = foldr (\x p -> addPointToPlot x '-' p) plot (zip [0..w] [0,0..])
-          w = width $ window graph
-          h = height $ window graph
+          w = width $ window g
+          h = height $ window g
           
 -- add the names of the axes to the graph, x horizontally to the end of the axis, and y vertically to the top of axis
-addAxesNameToPlot:: Plot -> InternalGraph Integer Integer a -> Plot
-addAxesNameToPlot plot graph = addStringToPlot Y (yGap, (height $ window graph)) (iyAxis graph) base0
-    where base0 = addStringToPlot X ((width $ window graph) - (fromIntegral $ length $ ixAxis graph),1) (ixAxis graph) plot
-          yGap = fromIntegral $ length $ show $ foldr max 0 (yAxisData graph)
+addAxesNameToPlot:: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addAxesNameToPlot plot g = addStringToPlot Y (yGap, (height $ window g)) (yAxis $ graph g) base0
+    where base0 = addStringToPlot X ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
+          yGap = fromIntegral $ length $ yAxis $ graph g
     
     
 -- fold over every point in the graph and add them to a given plot
-addGraphToPlot :: Plot -> InternalGraph Integer Integer a -> Plot
-addGraphToPlot plot graph = foldr (\x p -> addPointToPlot x 'X' p) plot (scaledSet graph)
+addGraphToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addGraphToPlot plot g = foldr (\x p -> addPointToPlot x 'X' p) plot (plottingSet g)
 
 -- fold over the lineSet in the graph and add every point to the plot
-addGradientToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
-addGradientToPlot plot graph = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet graph)
+addGradientToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet g)
 
-addTitleToPlot :: Plot -> InternalGraph Integer Integer Char -> Plot
-addTitleToPlot plot graph = addStringToPlot X mid (ititle graph) plot
-    where mid = (((width $ window graph) `div` 2) - (fromIntegral $ length (ititle graph) `div` 2), (height $ window graph) - 1)
+addTitleToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
+    where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 1)
 
 -- combine all the add functions into one function to fill and blank plot with a graph
-populateGraph :: Plot -> InternalGraph Integer Integer Char -> Plot
+populateGraph :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g) g
-
--- map over the gradient in the line set converting gradients to  char to represent 
--- the gradient we have replaced
-gradientToChar :: InternalGraph Integer Integer Double -> InternalGraph Integer Integer Char
-gradientToChar g = InternalGraph {
-                        imaxX = imaxX g,
-                        iminX = iminX g,
-                        imaxY = imaxY g,
-                        iminY = iminY g,
-                        ititle = (ititle g),
-                        baseSet = (baseSet g),
-                        ixAxis = (ixAxis g),
-                        iyAxis = (iyAxis g),
-                        xAxisData = (xAxisData g),
-                        yAxisData = (yAxisData g),
-                        scaledSet = (scaledSet g),
-                        lineSet = map (\(x,c) -> (x, gradient c)) (lineSet g),
-                        window = (window g)
-                   }
-    
-gradient :: Double -> Char
---doesn't work great -_-
-gradient x | x >= 8 = '|'
-gradient x | x <= (-8) = '|'
-gradient x | x >= 2 = '/'
-gradient x | x <= (-2) = '\\'
-gradient x = '-'
-
 
 ----------------------------------------------------------------
 
@@ -117,10 +89,9 @@ graphToPlot g = do
                                          --and inbetween points
                     case maybeInt of
                         Nothing -> return Nothing
-                        Just int -> return $ Just $ populateGraph plot graph --add all the points to the plot
-                            where graph = gradientToChar int --convert the gradients to chars
-                                  plot = initPlot (window graph) --initalize an empty plot
-    where internal = toInternalInt g
+                        Just int -> return $ Just $ populateGraph plot int --add all the points to the plot
+                            where plot = initPlot (window int) --initalize an empty plot
+    where internal = toInternal g
     
 unsafe_graphToPlot :: Graph Integer Integer -> IO (Plot)
 unsafe_graphToPlot g = do

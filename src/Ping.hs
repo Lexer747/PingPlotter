@@ -3,6 +3,7 @@ module Ping where
 import GraphTypes
 import GraphBuild
 import PingTest
+import Data.Time.Clock
 import Data.Time.Clock.POSIX
 
 -- encapsulate the POSIXTime Stamp so we can change the show function
@@ -45,6 +46,8 @@ instance RealFrac TimeStamp where
     floor (MkTimeStamp a) = floor a
 
 ------------------------------------------------------------------------------
+instance GraphData TimeStamp where
+    convert (MkTimeStamp a) = nominalDiffTimeToSeconds a
 
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
