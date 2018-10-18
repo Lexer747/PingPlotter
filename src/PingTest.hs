@@ -3,7 +3,7 @@ module PingTest where
 import System.Process
 import System.Environment
 import Text.Regex.Posix
-import GHC.IO.Handle
+import GHC.IO.Handle 
 
 
 ping :: String -> IO String

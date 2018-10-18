@@ -46,8 +46,11 @@ instance RealFrac TimeStamp where
     floor (MkTimeStamp a) = floor a
 
 ------------------------------------------------------------------------------
+
+--TODO fix
 instance GraphData TimeStamp where
-    convert (MkTimeStamp a) = nominalDiffTimeToSeconds a
+    convert = id
+
 
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a

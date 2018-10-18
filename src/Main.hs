@@ -3,7 +3,6 @@ module Main where
 import Control.Monad
 import System.Environment
 import System.Console.Terminal.Size
-import Data.Dates
 
 import InternalGraph
 import GraphPlotter
@@ -11,6 +10,7 @@ import GraphTypes
 import PingTest
 import GraphBuild
 import Ping
+import TimeStamp
 
 
 
