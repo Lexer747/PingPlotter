@@ -50,8 +50,6 @@ instance (Show a, Show b) => Show (InternalGraph a b) where
 showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
 showLine = concatMap (\(xs, c) -> "      (" ++ (show xs) ++ ",\n     " ++ (show c) ++ ") \n\n")
 
-class GraphData a where
-    convert :: (RealFrac b, Ord b, Enum b) => a -> b
   
 instance GraphData Integer where
     convert a = fromIntegral a
