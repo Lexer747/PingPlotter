@@ -53,10 +53,6 @@ instance RealFrac TimeStamp where
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
     
---allow a different form of show
-class IOShow a where
-    ioShow :: a -> IO String
-    
 instance IOShow TimeStamp where
     ioShow = localizeTimeStamp
  

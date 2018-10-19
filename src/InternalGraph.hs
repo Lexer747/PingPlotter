@@ -45,23 +45,27 @@ getLines stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLines stepSize ((x',
         b = y - (x * m) --find the intersect (y = mx + c)
         m = (y' - y) / (x' - x) --find the gradient (rise / run)
 getLines _ _ = []
-
+ 
 -- getAxis takes an axis, an integer which corresponds the size of the screen in that axis
 -- then the min and max values for the axis, and it will return a list of points and axis labels
 -- to be drawn
-getAxis :: (RealFrac a, Ord a, Enum a) => Axis -> Integer -> a -> a -> [(Integer, a)]
-getAxis X w min max = undefined
-getAxis Y h min max = undefined
+--uses the ioShow class to determine the length of data
+
+--current implementation is wrong, need to think about how to do the maths better
+getAxis :: (RealFrac a, IOShow a) => Integer -> Integer -> a -> a -> [(Integer, a)]
+getAxis len window min max = let gap = window \\ 2 * len in
+                             let list = [0,gap..(window - gap)] in
+                             map (\x -> (x,normalize (fromIntegral 0) (fromIntegral window) min max (fromIntegral x))) list
 
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure :: (RealFrac x, Enum x, Ord x) => 
-    (a -> x) -> (b -> x) -> Graph a b -> Window Integer -> InternalGraph a b
-toInternalPure convertX convertY g window = InternalGraph {
+toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow x) => 
+    (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
+toInternalPure convertX convertY lenX lenY g window = InternalGraph {
         graph = g,
-        xAxisData = [],
-        yAxisData = [],
+        xAxisData = getAxis lenX w (convertX $ minX g) (convertX $ maxX g),
+        yAxisData = getAxis lenY h (convertY $ minY g) (convertY $ maxY g),
         plottingSet = mapS round scaledSet,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
@@ -80,11 +84,16 @@ gradient x | x <= (-2) = '\\'
 gradient x = '-'  
         
 -- take a graph and scale it to be fit to the screen
-toInternal :: (RealFrac x, Enum x, Ord x) => (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
+toInternal :: (RealFrac x, Enum x, Ord x, IOShow x) =>
+    (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
 toInternal convertX convertY g = do
+                lX <- ioShow (maxX g)
+                lY <- ioShow (maxY g)
+                let lenX = fromIntegral $ length lX
+                let lenY = fromIntegral $ length lY
                 s <- size
                 case s of
-                    Just window -> return $ Just $ toInternalPure convertX convertY g (adjustSize window)
+                    Just window -> return $ Just $ toInternalPure convertX convertY lenX lenY g (adjustSize window)
                     Nothing -> return Nothing
                        
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over

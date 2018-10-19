@@ -1,8 +1,12 @@
 module GraphTypes 
-    (Graph(..), InternalGraph(..), Axis(..))
+    (Graph(..), InternalGraph(..), Axis(..), IOShow(..))
 where
 
 import System.Console.Terminal.Size
+
+--allow a different form of show
+class IOShow a where
+    ioShow :: a -> IO String
 
 data Axis = X | Y deriving (Show)
 
