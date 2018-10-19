@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast
 ) where
 
 import Data.List (sort)
@@ -55,5 +55,10 @@ mapS :: (a -> b) -> [(a, a)] -> [(b, b)]
 mapS f xs = map (symmetric f) xs
 
 --mapAsymmetric, given two different functions map each one to its own half of a tupled list
-mapA:: (a -> c) -> (b -> d) -> [(a, b)] -> [(c, d)]
+mapA :: (a -> c) -> (b -> d) -> [(a, b)] -> [(c, d)]
 mapA f w xs = map (asymmetric f w) xs
+
+removeLast :: String -> String
+removeLast (x:[])   = []
+removeLast (x:xs)   = x:(removeLast xs)
+removeLast []       = []

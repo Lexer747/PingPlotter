@@ -1,5 +1,5 @@
 module PingAPI
-    (pingInt)
+    (pingInt, clear)
 where
 
 import System.Process
@@ -27,3 +27,5 @@ pingInt s = do
                 n <- p
                 return $ read n
     where p = parsePingString $ ping s
+    
+clear = system "cls"

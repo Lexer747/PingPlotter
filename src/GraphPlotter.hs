@@ -22,7 +22,7 @@ initPlot window = array (0,h) [ (i, (array (0,w) [(i,blank) | i <- [0..w]])) | i
 
 --convert a plot to a string which concatenates each row with a newline
 plotToPrintString :: Plot -> String
-plotToPrintString p = unlines $ reverse $ map elems $ elems p
+plotToPrintString p = removeLast $ unlines $ reverse $ map elems $ elems p
 
 --add a point with a representative char 
 addPointToPlot :: (Integer, Integer) -> Char -> Plot -> Plot
@@ -106,6 +106,6 @@ graphPrint cX cY g = do
                     maybePlot <- graphToPlot cX cY g
                     case maybePlot of 
                         Nothing -> putStrLn "graphPrint Failed - cause: window size probably failed"
-                        Just plot -> putStrLn $ plotToPrintString plot
+                        Just plot -> putStr $ plotToPrintString plot
 
 
