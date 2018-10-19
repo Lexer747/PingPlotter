@@ -32,8 +32,7 @@ addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
 --adds a string to a plot, the first char starts at the specified point (x,y), and the last
 --char will be the at the point (x+len, y) if X or (x,y-len) if Y
 addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
-addStringToPlot X (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
-addStringToPlot Y (x,y) (c:cs) plot = addStringToPlot Y (x,y-1) cs (addPointToPlot (x,y) c plot)
+addStringToPlot _ (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
 addStringToPlot _ _     []     plot = plot
 
 
@@ -56,11 +55,10 @@ addBlankAxesToPlot plot g = addPointToPlot (0,0) '+' base1
           w = width $ window g
           h = height $ window g
           
--- add the names of the axes to the graph, x horizontally to the end of the axis, and y vertically to the top of axis
+-- add the names of the axes to the graph, x horizontally to the end of the axis, and y horizontally to the top of axis
 addAxesNameToPlot:: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
-addAxesNameToPlot plot g = addStringToPlot Y (yGap, (height $ window g)) (yAxis $ graph g) base0
+addAxesNameToPlot plot g = addStringToPlot Y (1, (height $ window g)) (yAxis $ graph g) base0
     where base0 = addStringToPlot X ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
-          yGap = fromIntegral $ length $ yAxis $ graph g
     
     
 -- fold over every point in the graph and add them to a given plot
@@ -73,7 +71,7 @@ addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c
 
 addTitleToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
-    where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 1)
+    where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 2)
 
 -- combine all the add functions into one function to fill and blank plot with a graph
 populateGraph :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
