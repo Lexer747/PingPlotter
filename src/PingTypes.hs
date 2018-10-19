@@ -50,7 +50,7 @@ instance RealFrac TimeStamp where
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
     
---get the current posix time
+--get the current POSIX time
 getTimeStamp :: IO TimeStamp
 getTimeStamp = do
                    t <- getPOSIXTime
@@ -70,7 +70,7 @@ getPing host = do
                   return (t,p)
                   
             
---given a host name initalize a graph with two pings            
+--given a host name initialize a graph with two pings            
 getInitGraph :: String -> IO (Graph TimeStamp Integer)
 getInitGraph host = do
                         p0 <- getPing host

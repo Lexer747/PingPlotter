@@ -23,12 +23,3 @@ main = do
                             initPing <- pingInt host
                             start host initPing
                     
-initPingGraph :: String -> Integer -> Graph Integer Integer
-initPingGraph host init = namedListToGraph [(1,init)] host ("Ping #", "time ms")
-
-
-start :: String -> Integer -> IO ()
-start host init = pingCycle host $ initPingGraph host init
-
-pingCycle :: String -> Graph Integer Integer -> IO ()
-pingCycle host graph = undefined
