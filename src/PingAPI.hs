@@ -1,4 +1,6 @@
-module PingTest where
+module PingAPI
+    (pingInt)
+where
 
 import System.Process
 import System.Environment
@@ -25,11 +27,3 @@ pingInt s = do
                 n <- p
                 return $ read n
     where p = parsePingString $ ping s
-    
-    
-clear = system "cls"
-          
-{-main = do
-        (host:_) <- getArgs
-        out <- pingInt host
-        putStrLn $ show out-}

@@ -1,8 +1,8 @@
-module Ping where
+module PingTypes where
 
 import GraphTypes
 import GraphBuild
-import PingTest
+import PingAPI
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 
@@ -84,8 +84,6 @@ addPing graph = do
                     p <- getPing $ title g
                     return $ addPoint p g
        
-       
-testGraph = addPing $ addPing $ addPing $ addPing $ addPing $ addPing $ getInitGraph "www.google.com"
 fakeGraph :: Graph TimeStamp Integer
 fakeGraph = Graph {
                maxX = 1534342116.0970596, minX = 1534342115.6511241, maxY = 32, minY = 29,
@@ -94,3 +92,4 @@ fakeGraph = Graph {
                yAxis = "Ping (ms)",
                dataSet = [(1534342115.6511241,29),(1534342115.7470349,30),(1534342115.8073856,29),(1534342115.8670728,30),(1534342115.9174635,29),(1534342115.9774075,29),(1534342116.0369138,29),(1534342116.0970596,32)]
             }
+         

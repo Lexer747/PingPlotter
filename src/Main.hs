@@ -7,9 +7,9 @@ import System.Console.Terminal.Size
 import InternalGraph
 import GraphPlotter
 import GraphTypes
-import PingTest
+import PingAPI
 import GraphBuild
-import Ping
+import PingTypes
 
 
 
