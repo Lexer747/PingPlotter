@@ -56,8 +56,8 @@ getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPr
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
 toInternalPure :: (RealFrac x, Enum x, Ord x) => 
-    Graph a b -> (a -> x) -> (b -> x) -> Window Integer -> InternalGraph a b
-toInternalPure g convertX convertY window = InternalGraph {
+    (a -> x) -> (b -> x) -> Graph a b -> Window Integer -> InternalGraph a b
+toInternalPure convertX convertY g window = InternalGraph {
         graph = g,
         xAxisData = [], --(getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
         yAxisData = [], --(getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
@@ -79,11 +79,11 @@ gradient x | x <= (-2) = '\\'
 gradient x = '-'  
         
 -- take a graph and scale it to be fit to the screen
-toInternal :: (RealFrac x, Enum x, Ord x) => Graph a b -> (a -> x) -> (b -> x) -> IO (Maybe (InternalGraph a b))
-toInternal g convertX convertY = do
+toInternal :: (RealFrac x, Enum x, Ord x) => (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
+toInternal convertX convertY g = do
                 s <- size
                 case s of
-                    Just window -> return $ Just $ toInternalPure g convertX convertY (adjustSize window)
+                    Just window -> return $ Just $ toInternalPure convertX convertY g (adjustSize window)
                     Nothing -> return Nothing
                        
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
@@ -91,4 +91,3 @@ adjustSize :: Window Integer -> Window Integer
 adjustSize win = Window {height = h, width = w}
     where h = (height win) - 1
           w = (width win) - 1
-
