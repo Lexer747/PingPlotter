@@ -30,7 +30,7 @@ addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
     where xrow = plot ! y
     
 --adds a string to a plot, the first char starts at the specified point (x,y), and the last
---char will be the at the point (x+len, y) if X or (x,y-len) if Y
+--char will be the at the point (x+len, y)
 addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
 addStringToPlot _ (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
 addStringToPlot _ _     []     plot = plot
@@ -74,6 +74,8 @@ addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
     where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 2)
 
 -- combine all the add functions into one function to fill and blank plot with a graph
+-- note: the order in which the functions are called is the order in which they are painted
+-- so the first one called will be painted over by other calls
 populateGraph :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g) g
 
@@ -85,11 +87,11 @@ graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
 graphToPlot convertX convertY  g = do
                     maybeInt <- internal --convert to internal representation
                                          --finding the scaled points to the screen
-                                         --and inbetween points
+                                         --and in between points
                     case maybeInt of
                         Nothing -> return Nothing
                         Just int -> return $ Just $ populateGraph plot int --add all the points to the plot
-                            where plot = initPlot (window int) --initalize an empty plot
+                            where plot = initPlot (window int) --initialize an empty plot
     where internal = toInternal convertX convertY g
     
 unsafe_graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>

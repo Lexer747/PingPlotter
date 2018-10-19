@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen
 ) where
 
 import Data.List (sort)
@@ -62,3 +62,9 @@ removeLast :: String -> String
 removeLast (x:[])   = []
 removeLast (x:xs)   = x:(removeLast xs)
 removeLast []       = []
+
+wordsWhen :: (Char -> Bool) -> String -> [String]
+wordsWhen p s =  case dropWhile p s of
+                      "" -> []
+                      s' -> w : wordsWhen p s''
+                            where (w, s'') = break p s'

@@ -46,12 +46,13 @@ getLines stepSize ((x,y):(x',y'):xs) = [(points, m)] ++ (getLines stepSize ((x',
         m = (y' - y) / (x' - x) --find the gradient (rise / run)
 getLines _ _ = []
 
---generates from a min max tuple, a list of points which represent that axis
-{-
-getAxisPrecise :: (Ord a, Fractional a, Enum a) => Axis -> (a,a) -> a -> [a]
-getAxisPrecise X (min,max) numberOfPoints = map left $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(min,0),(max,0)]
-getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPrecise ((max - min) / numberOfPoints) [(0,min),(0,max)]
--}
+-- getAxis takes an axis, an integer which corresponds the size of the screen in that axis
+-- then the min and max values for the axis, and it will return a list of points and axis labels
+-- to be drawn
+getAxis :: (RealFrac a, Ord a, Enum a) => Axis -> Integer -> a -> a -> [(Integer, a)]
+getAxis X w min max = undefined
+getAxis Y h min max = undefined
+
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
@@ -59,8 +60,8 @@ toInternalPure :: (RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure convertX convertY g window = InternalGraph {
         graph = g,
-        xAxisData = [], --(getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
-        yAxisData = [], --(getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
+        xAxisData = [],
+        yAxisData = [],
         plottingSet = mapS round scaledSet,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
