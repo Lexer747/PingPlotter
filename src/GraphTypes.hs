@@ -1,5 +1,5 @@
 module GraphTypes 
-    (Graph(..), InternalGraph(..), Axis(..), GraphData(..))
+    (Graph(..), InternalGraph(..), Axis(..))
 where
 
 import System.Console.Terminal.Size
@@ -27,7 +27,6 @@ instance (Show a, Show b) => Show (Graph a b) where
 -- a graph structure which also contains a another set of point which are the line segements for the original data set
 -- a = type of x-axis
 -- b = type of y-axis
--- c = type of calculated gradient
 data InternalGraph a b = InternalGraph {
         graph :: Graph a b,
         xAxisData :: [(Integer,a)],
@@ -49,7 +48,3 @@ instance (Show a, Show b) => Show (InternalGraph a b) where
              
 showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
 showLine = concatMap (\(xs, c) -> "      (" ++ (show xs) ++ ",\n     " ++ (show c) ++ ") \n\n")
-
-  
-instance GraphData Integer where
-    convert a = fromIntegral a

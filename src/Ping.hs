@@ -47,11 +47,6 @@ instance RealFrac TimeStamp where
 
 ------------------------------------------------------------------------------
 
---TODO fix
-instance GraphData TimeStamp where
-    convert = id
-
-
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
     
@@ -83,7 +78,7 @@ getInitGraph host = do
                         return $ initGraph p0 p1 host
            
 --given a graph created by 'initGraph' add another ping to its set          
-addPing :: IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
+addPing ::  IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
 addPing graph = do
                     g <- graph
                     p <- getPing $ title g

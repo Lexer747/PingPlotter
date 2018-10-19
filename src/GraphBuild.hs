@@ -26,8 +26,8 @@ namedListToGraph list name (xaxis,yaxis)  = Graph {
     (ymin, ymax) = getMinMax y
    
 -- edit the list of points in the graph with the function, and rebuild the constraint
--- slow as a whole new graph is made, so a O(n) search occurs for every call
-editGraph :: (Ord a, Ord b, Ord c, Ord d) => ([(a,b)] -> [(c,d)]) -> Graph a b -> Graph c d
+-- slow as a whole new graph is made, so an O(n) search occurs for every call
+editGraph :: (Ord a, Ord b) => ([(a,b)] -> [(a,b)]) -> Graph a b -> Graph a b
 editGraph func graph = namedListToGraph newSet (title graph) (xAxis graph, yAxis graph)
     where 
         newSet = func (dataSet graph)

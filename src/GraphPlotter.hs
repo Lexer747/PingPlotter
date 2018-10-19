@@ -82,8 +82,9 @@ populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphTo
 ----------------------------------------------------------------
 
 -- plot a graph
-graphToPlot :: Graph Integer Integer -> IO (Maybe Plot)
-graphToPlot g = do
+graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+    Graph a b -> (a -> x) -> (b -> x) -> IO (Maybe Plot)
+graphToPlot g convertX convertY = do
                     maybeInt <- internal --convert to internal representation
                                          --finding the scaled points to the screen
                                          --and inbetween points
@@ -91,18 +92,20 @@ graphToPlot g = do
                         Nothing -> return Nothing
                         Just int -> return $ Just $ populateGraph plot int --add all the points to the plot
                             where plot = initPlot (window int) --initalize an empty plot
-    where internal = toInternal g
+    where internal = toInternal g convertX convertY
     
-unsafe_graphToPlot :: Graph Integer Integer -> IO (Plot)
-unsafe_graphToPlot g = do
-                            maybeG <- graphToPlot g
+unsafe_graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+    Graph a b -> (a -> x) -> (b -> x) -> IO (Plot)
+unsafe_graphToPlot g cX cY = do
+                            maybeG <- graphToPlot g cX cY
                             return $ fromJust maybeG
     
-graphPrint :: Graph Integer Integer -> IO ()
-graphPrint g = do
-                    maybePlot <- graphToPlot g
+graphPrint :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+    Graph a b -> (a -> x) -> (b -> x) -> IO ()
+graphPrint g cX cY = do
+                    maybePlot <- graphToPlot g cX cY
                     case maybePlot of 
-                        Nothing -> putStrLn "Failed - window size probably failed"
+                        Nothing -> putStrLn "graphPrint Failed - cause: window size probably failed"
                         Just plot -> putStrLn $ plotToPrintString plot
 
 

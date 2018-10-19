@@ -55,8 +55,9 @@ getAxisPrecise Y (min,max) numberOfPoints = map right $ left $ head $ getLinesPr
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure :: (GraphData a, GraphData b) => Graph a b -> Window Integer -> InternalGraph a b
-toInternalPure g window = InternalGraph {
+toInternalPure :: (RealFrac x, Enum x, Ord x) => 
+    Graph a b -> (a -> x) -> (b -> x) -> Window Integer -> InternalGraph a b
+toInternalPure g convertX convertY window = InternalGraph {
         graph = g,
         xAxisData = [], --(getAxisPrecise X ((minX graph),(maxX graph)) (w / xaxisGap)),
         yAxisData = [], --(getAxisPrecise Y ((minY graph),(maxY graph)) (h / yaxisGap)),
@@ -65,9 +66,9 @@ toInternalPure g window = InternalGraph {
         window = window
     }
     where 
-        h = fromIntegral $ height window
-        w = fromIntegral $ width window
-        scaledSet = normalizeSet h w (convert $ minX g) (convert $ maxX g) (convert $ minY g) (convert $ maxY g) (mapA convert convert $ dataSet g)
+        h = fromIntegral $ height window --height must be the same type as the 'y' values
+        w = fromIntegral $ width window --width must be the same type as the 'x' values
+        scaledSet = normalizeSet h w (convertX $ minX g) (convertX $ maxX g) (convertY $ minY g) (convertY $ maxY g) (mapA convertX convertY $ dataSet g)
 
 gradient :: RealFrac a => a -> Char
 --doesn't work great -_-
@@ -78,11 +79,11 @@ gradient x | x <= (-2) = '\\'
 gradient x = '-'  
         
 -- take a graph and scale it to be fit to the screen
-toInternal :: (GraphData a, GraphData b) => Graph a b -> IO (Maybe (InternalGraph a b))
-toInternal g = do
+toInternal :: (RealFrac x, Enum x, Ord x) => Graph a b -> (a -> x) -> (b -> x) -> IO (Maybe (InternalGraph a b))
+toInternal g convertX convertY = do
                 s <- size
                 case s of
-                    Just window -> return $ Just $ toInternalPure g (adjustSize window)
+                    Just window -> return $ Just $ toInternalPure g convertX convertY (adjustSize window)
                     Nothing -> return Nothing
                        
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
