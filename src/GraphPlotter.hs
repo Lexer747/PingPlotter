@@ -82,7 +82,7 @@ populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphTo
 ----------------------------------------------------------------
 
 -- plot a graph
-graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe Plot)
 graphToPlot convertX convertY  g = do
                     maybeInt <- internal --convert to internal representation
@@ -94,13 +94,13 @@ graphToPlot convertX convertY  g = do
                             where plot = initPlot (window int) --initialize an empty plot
     where internal = toInternal convertX convertY g
     
-unsafe_graphToPlot :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) ->  Graph a b -> IO (Plot)
 unsafe_graphToPlot cX cY g = do
                             maybeG <- graphToPlot cX cY g
                             return $ fromJust maybeG
     
-graphPrint :: (Show a, Show b, RealFrac x, Enum x, Ord x) =>
+graphPrint :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO ()
 graphPrint cX cY g = do
                     maybePlot <- graphToPlot cX cY g

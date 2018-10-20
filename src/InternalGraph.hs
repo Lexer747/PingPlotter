@@ -60,12 +60,12 @@ getAxis len window min max = let gap = window \\ 2 * len in
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
-toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow x) => 
+toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) => 
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure convertX convertY lenX lenY g window = InternalGraph {
         graph = g,
-        xAxisData = getAxis lenX w (convertX $ minX g) (convertX $ maxX g),
-        yAxisData = getAxis lenY h (convertY $ minY g) (convertY $ maxY g),
+        xAxisData = [],--getAxis lenX w (convertX $ minX g) (convertX $ maxX g),
+        yAxisData = [],--getAxis lenY h (convertY $ minY g) (convertY $ maxY g),
         plottingSet = mapS round scaledSet,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
@@ -84,7 +84,7 @@ gradient x | x <= (-2) = '\\'
 gradient x = '-'  
         
 -- take a graph and scale it to be fit to the screen
-toInternal :: (RealFrac x, Enum x, Ord x, IOShow x) =>
+toInternal :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
 toInternal convertX convertY g = do
                 lX <- ioShow (maxX g)
