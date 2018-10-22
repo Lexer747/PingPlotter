@@ -49,14 +49,10 @@ getLines _ _ = []
 -- getAxis takes an axis, an integer which corresponds the size of the screen in that axis
 -- then the min and max values for the axis, and it will return a list of points and axis labels
 -- to be drawn
---uses the ioShow class to determine the length of data
-
---current implementation is wrong, need to think about how to do the maths better
-getAxis :: (RealFrac a, IOShow a) => Integer -> Integer -> a -> a -> [(Integer, a)]
-getAxis len window min max = let gap = window \\ 2 * len in
-                             let list = [0,gap..(window - gap)] in
-                             map (\x -> (x,normalize (fromIntegral 0) (fromIntegral window) min max (fromIntegral x))) list
-
+getAxis :: Integer -> Integer ->  [Integer] -> [a] -> [(Integer, a)]
+getAxis len window axispoints plottingpoints = filterOnPair (\(x,_) (y,_) -> True) candidateList
+    where gap = window \\ len * 2
+          candidateList = zip axispoints plottingpoints
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
@@ -64,24 +60,25 @@ toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure convertX convertY lenX lenY g window = InternalGraph {
         graph = g,
-        xAxisData = [],--getAxis lenX w (convertX $ minX g) (convertX $ maxX g),
-        yAxisData = [],--getAxis lenY h (convertY $ minY g) (convertY $ maxY g),
-        plottingSet = mapS round scaledSet,
+        xAxisData = getAxis lenX (width window) (map left plotset) (map left $ dataSet g),
+        yAxisData = getAxis lenY (height window) (map right plotset) (map right $ dataSet g),
+        plottingSet = plotset,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
     }
-    where 
+    where
         h = fromIntegral $ height window --height must be the same type as the 'y' values
         w = fromIntegral $ width window --width must be the same type as the 'x' values
         scaledSet = normalizeSet h w (convertX $ minX g) (convertX $ maxX g) (convertY $ minY g) (convertY $ maxY g) (mapA convertX convertY $ dataSet g)
+        plotset = mapS round scaledSet
 
 gradient :: RealFrac a => a -> Char
 --doesn't work great -_-
-gradient x | x >= 8 = '|'
-gradient x | x <= (-8) = '|'
-gradient x | x >= 2 = '/'
-gradient x | x <= (-2) = '\\'
-gradient x = '-'  
+gradient x | x >= 8     = '|'
+gradient x | x <= (-8)  = '|'
+gradient x | x >= 2     = '/'
+gradient x | x <= (-2)  = '\\'
+gradient _              = '-'  
         
 -- take a graph and scale it to be fit to the screen
 toInternal :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>

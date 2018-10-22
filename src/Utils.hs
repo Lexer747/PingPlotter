@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, filterOnPair
 ) where
 
 import Data.List (sort)
@@ -25,7 +25,7 @@ rmdup (x:xs) | x `elem` xs = rmdup xs
 rmdup []                   = []
     
 right (_,x) = x
-left (x,_) = x
+left (x,_)  = x
 
 --ceiling integer division
 divide :: Integral a => a -> a -> a
@@ -68,3 +68,9 @@ wordsWhen p s =  case dropWhile p s of
                       "" -> []
                       s' -> w : wordsWhen p s''
                             where (w, s'') = break p s'
+                            
+filterOnPair :: (a -> a -> Bool) -> [a] -> [a]
+filterOnPair p (x:xx:xs) | p x xx       = x:(filterOnPair p (xx:xs))
+                         | otherwise    = filterOnPair p (xx:xs)
+filterOnPair _ (x:[])                   = []
+filterOnPair _ []                       = []

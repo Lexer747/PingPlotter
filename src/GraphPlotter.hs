@@ -34,18 +34,6 @@ addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
 addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
 addStringToPlot _ (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
 addStringToPlot _ _     []     plot = plot
-
-
--- add an individual axis to the plot
-addAxisToPlot :: (Show a) => Axis -> [(Integer, a)] -> Plot -> Plot
-addAxisToPlot X axis plot = foldr (\(point,str) p -> addStringToPlot X point (show str) p)  plot points
-    where points = map (\(x, a) -> ((x,0), a)) axis
-addAxisToPlot Y axis plot = foldr (\(point,str) p -> addStringToPlot Y point (show str) p)  plot points
-    where points = map (\(y, a) -> ((0,y), a)) axis
-    
--- add the numbers from the axis in the graph data to the plot
-addAxesToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
-addAxesToPlot plot g = addAxisToPlot Y (yAxisData g) (addAxisToPlot X (xAxisData g) plot)
       
 -- add the blank '-' and '|' characters to each side of plot
 addBlankAxesToPlot :: Plot -> InternalGraph a b -> Plot
@@ -56,7 +44,7 @@ addBlankAxesToPlot plot g = addPointToPlot (0,0) '+' base1
           h = height $ window g
           
 -- add the names of the axes to the graph, x horizontally to the end of the axis, and y horizontally to the top of axis
-addAxesNameToPlot:: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
+addAxesNameToPlot:: Plot -> InternalGraph a b -> Plot
 addAxesNameToPlot plot g = addStringToPlot Y (1, (height $ window g)) (yAxis $ graph g) base0
     where base0 = addStringToPlot X ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
     
@@ -77,21 +65,44 @@ addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
 -- note: the order in which the functions are called is the order in which they are painted
 -- so the first one called will be painted over by other calls
 populateGraph :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
-populateGraph p g = addTitleToPlot (addAxesNameToPlot (addAxesToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g) g
+populateGraph p g = addTitleToPlot (addAxesNameToPlot (addGraphToPlot (addGradientToPlot (addBlankAxesToPlot p g) g) g) g) g
 
 ----------------------------------------------------------------
+
+-- add an individual axis to the plot
+addAxisToPlot :: (IOShow a) => Axis -> [(Integer, a)] -> Plot -> IO Plot
+addAxisToPlot X ((x,a):xs) plot = do 
+                str <- ioShow a
+                let p = addStringToPlot X (x,0) str plot
+                addAxisToPlot X xs p
+addAxisToPlot Y ((y,a):ys) plot = do 
+                str <- ioShow a
+                let p = addStringToPlot Y (0,y) str plot
+                addAxisToPlot Y ys p
+addAxisToPlot _ [] plot = return plot
+    
+-- add the numbers from the axis in the graph data to the plot
+addAxesToPlot :: (IOShow a, IOShow b) => Plot -> InternalGraph a b -> IO Plot
+addAxesToPlot plot g = do 
+        p <- addAxisToPlot Y (yAxisData g) plot
+        addAxisToPlot X (xAxisData g) p
+
+----------------------------------------------------------------
+
 
 -- plot a graph
 graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe Plot)
-graphToPlot convertX convertY  g = do
+graphToPlot convertX convertY g = do
                     maybeInt <- internal --convert to internal representation
                                          --finding the scaled points to the screen
                                          --and in between points
                     case maybeInt of
-                        Nothing -> return Nothing
-                        Just int -> return $ Just $ populateGraph plot int --add all the points to the plot
-                            where plot = initPlot (window int) --initialize an empty plot
+                        Nothing     -> return Nothing
+                        Just int    -> do
+                                            let plot = populateGraph (initPlot (window int)) int --add all the points to the plot
+                                            p <- addAxesToPlot plot int 
+                                            return $ Just p
     where internal = toInternal convertX convertY g
     
 unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
