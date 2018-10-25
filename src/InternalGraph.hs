@@ -50,13 +50,13 @@ getLines _ _ = []
 -- then the min and max values for the axis, and it will return a list of points and axis labels
 -- to be drawn
 getAxis :: Integer -> Integer ->  [Integer] -> [a] -> [(Integer, a)]
-getAxis len window axispoints plotpoints = getAxis_help gap axispoints plotpoints 0 []
-    where gap = window \\ len * 2
+getAxis len window axispoints plotpoints = getAxis_help len window gap axispoints plotpoints 0 []
+    where gap = window \\ (len * 2)
     
-getAxis_help :: Integer -> [Integer] -> [a] -> Integer -> [(Integer,a)] -> [(Integer,a)]
-getAxis_help gap (x:xs) (p:ps) head acc | head + gap <  x = getAxis_help gap xs ps x (acc ++ [(x,p)])
-getAxis_help gap (x:xs) (p:ps) head acc | head + gap >= x = getAxis_help gap xs ps head acc
-getAxis_help _ [] [] _ acc = acc
+getAxis_help :: Integer -> Integer -> Integer -> [Integer] -> [a] -> Integer -> [(Integer,a)] -> [(Integer,a)]
+getAxis_help l w gap (x:xs) (p:ps) head acc | ((head + gap < x) && (x + l < w)) = getAxis_help l w gap xs ps x (acc ++ [(x,p)])
+getAxis_help l w gap (x:xs) (p:ps) head acc | otherwise = getAxis_help l w gap xs ps head acc
+getAxis_help _ _ _ [] [] _ acc = acc
           
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
