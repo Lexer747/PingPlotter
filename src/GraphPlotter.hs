@@ -79,7 +79,7 @@ addAxisToPlot Y ((y,a):ys) plot = do
                 str <- ioShow a
                 let p = addStringToPlot Y (0,y) str plot
                 addAxisToPlot Y ys p
-addAxisToPlot _ [] plot = return plot
+addAxisToPlot _ _ plot = return plot
     
 -- add the numbers from the axis in the graph data to the plot
 addAxesToPlot :: (IOShow a, IOShow b) => Plot -> InternalGraph a b -> IO Plot
@@ -98,11 +98,11 @@ graphToPlot convertX convertY g = do
                                          --finding the scaled points to the screen
                                          --and in between points
                     case maybeInt of
-                        Nothing     -> return Nothing
-                        Just int    -> do
-                                            let plot = populateGraph (initPlot (window int)) int --add all the points to the plot
-                                            p <- addAxesToPlot plot int 
-                                            return $ Just p
+                        Nothing  -> return Nothing
+                        Just int -> do
+                                        let plot = populateGraph (initPlot (window int)) int --add all the points to the plot
+                                        p <- addAxesToPlot plot int 
+                                        return $ Just p
     where internal = toInternal convertX convertY g
     
 unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>

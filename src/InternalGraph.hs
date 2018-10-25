@@ -51,7 +51,7 @@ getLines _ _ = []
 -- to be drawn
 getAxis :: Integer -> Integer ->  [Integer] -> [a] -> [(Integer, a)]
 getAxis len window axispoints plotpoints = getAxis_help len window gap axispoints plotpoints 0 []
-    where gap = window \\ (len * 2)
+    where gap = len + 1
     
 getAxis_help :: Integer -> Integer -> Integer -> [Integer] -> [a] -> Integer -> [(Integer,a)] -> [(Integer,a)]
 getAxis_help l w gap (x:xs) (p:ps) head acc | ((head + gap < x) && (x + l < w)) = getAxis_help l w gap xs ps x (acc ++ [(x,p)])

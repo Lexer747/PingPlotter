@@ -41,16 +41,14 @@ data InternalGraph a b = InternalGraph {
     }
 
 instance (Show a, Show b) => Show (InternalGraph a b) where
-    show g = "Internal Graph { \n   maxX = " ++ (show $ maxX $ graph g) ++ ", minX = " ++ (show $ minX $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ",\n\
+    show g = "Internal Graph { \n   minX = " ++ (show $ minX $ graph g) ++ ", maxX = " ++ (show $ maxX $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ",\n\
              \   title = " ++ (show $ title $ graph g) ++ ",\n\
              \   window = " ++ (show $ window g) ++ ", \n\
-             \   dataSet = " ++ (show $ dataSet $ graph g) ++ ", \n\
+             \   dataSet [" ++ (show $ length $ dataSet $ graph g) ++ "] = " ++ (show $ dataSet $ graph g) ++ ", \n\
              \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (show $ xAxis $ graph g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
              \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (show $ yAxis $ graph g) ++ "} = " ++ (show $ yAxisData g) ++ ", \n\
              \   scaledSet = " ++ (show $ plottingSet g) ++ ", \n\
-             \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n\
-             \   x-Axis Data = " ++ (show $ xAxisData g) ++ "\n\
-             \   y-Axis Data = " ++ (show $ yAxisData g) ++ "\n"
+             \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n"
              
 showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
 showLine = concatMap (\(xs, c) -> "      (" ++ (show xs) ++ ",\n     " ++ (show c) ++ ") \n\n")

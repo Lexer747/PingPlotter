@@ -103,7 +103,7 @@ addPing graph = do
        
 fakeGraph :: Graph TimeStamp Integer
 fakeGraph = Graph {
-               maxX = 1534342116.0970596, minX = 1534342115.6511241, maxY = 32, minY = 29,
+               maxX = 1534342116.0970596, minX = 1534342115.6511241, maxY = 33, minY = 26,
                title = "www.google.com",
                xAxis = "Date",
                yAxis = "Ping (ms)",
