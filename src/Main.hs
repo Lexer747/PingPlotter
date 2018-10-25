@@ -11,8 +11,8 @@ import PingAPI
 import GraphBuild
 import PingTypes
 
-
-
+main = undefined
+{-
 main :: IO ()
 main = do
             x <- getArgs
@@ -22,4 +22,4 @@ main = do
                         do 
                             initPing <- pingInt host
                             start host initPing
-                    
+                            -}

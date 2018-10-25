@@ -48,7 +48,9 @@ instance (Show a, Show b) => Show (InternalGraph a b) where
              \   x-Axis [" ++ (show $ length $ xAxisData g) ++ "] {" ++ (show $ xAxis $ graph g) ++ "} = " ++ (show $ xAxisData g) ++ ", \n\
              \   y-Axis [" ++ (show $ length $ yAxisData g) ++ "] {" ++ (show $ yAxis $ graph g) ++ "} = " ++ (show $ yAxisData g) ++ ", \n\
              \   scaledSet = " ++ (show $ plottingSet g) ++ ", \n\
-             \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n}"
+             \   lineSet = [\n" ++ (showLine $ lineSet g) ++ "   ]\n\
+             \   x-Axis Data = " ++ (show $ xAxisData g) ++ "\n\
+             \   y-Axis Data = " ++ (show $ yAxisData g) ++ "\n"
              
 showLine :: (Show a, Show b, Show c) => [([(a,b)], c)] -> String
 showLine = concatMap (\(xs, c) -> "      (" ++ (show xs) ++ ",\n     " ++ (show c) ++ ") \n\n")
