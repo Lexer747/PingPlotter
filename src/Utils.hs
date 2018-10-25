@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, filterOnPair
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen
 ) where
 
 import Data.List (sort)
@@ -68,9 +68,3 @@ wordsWhen p s =  case dropWhile p s of
                       "" -> []
                       s' -> w : wordsWhen p s''
                             where (w, s'') = break p s'
-                            
-filterOnPair :: (a -> a -> Bool) -> [a] -> [a]
-filterOnPair p (x:xx:xs) | p x xx       = x:(filterOnPair p (xx:xs))
-                         | otherwise    = filterOnPair p (xx:xs)
-filterOnPair _ (x:[])                   = []
-filterOnPair _ []                       = []
