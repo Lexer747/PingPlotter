@@ -1,6 +1,6 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen
-) where
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, mySort
+    ) where
 
 import Data.List (sort)
 
@@ -68,3 +68,9 @@ wordsWhen p s =  case dropWhile p s of
                       "" -> []
                       s' -> w : wordsWhen p s''
                             where (w, s'') = break p s'
+
+mySort :: (a -> a -> Integer) -> [a] -> [a]
+mySort _ []     = []
+mySort f (x:xs) = let small = mySort f [a | a <- xs, (f x a) > 0 ]
+                      big   = mySort f [a | a <- xs, (f x a) >= 0]
+                  in  small ++ [x] ++ big

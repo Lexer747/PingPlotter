@@ -41,7 +41,7 @@ data InternalGraph a b = InternalGraph {
     }
 
 instance (Show a, Show b) => Show (InternalGraph a b) where
-    show g = "Internal Graph { \n   minX = " ++ (show $ minX $ graph g) ++ ", maxX = " ++ (show $ maxX $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ",\n\
+    show g = "Internal Graph { \n   minX = " ++ (show $ minX $ graph g) ++ ", maxX = " ++ (show $ maxX $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ",\n\
              \   title = " ++ (show $ title $ graph g) ++ ",\n\
              \   window = " ++ (show $ window g) ++ ", \n\
              \   dataSet [" ++ (show $ length $ dataSet $ graph g) ++ "] = " ++ (show $ dataSet $ graph g) ++ ", \n\

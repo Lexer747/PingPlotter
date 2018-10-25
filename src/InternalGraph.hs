@@ -49,9 +49,11 @@ getLines _ _ = []
 -- getAxis takes an axis, an integer which corresponds the size of the screen in that axis
 -- then the min and max values for the axis, and it will return a list of points and axis labels
 -- to be drawn
-getAxis :: Integer -> Integer ->  [Integer] -> [a] -> [(Integer, a)]
-getAxis len window axispoints plotpoints = getAxis_help len window gap axispoints plotpoints 0 []
+getAxis :: Axis -> Integer -> Integer ->  ([Integer],[a]) -> [(Integer, a)]
+getAxis X len window (axispoints,plotpoints) = getAxis_help len window gap axispoints plotpoints 0 []
     where gap = len + 1
+getAxis Y len window (axispoints,plotpoints) = getAxis_help len window gap axispoints plotpoints 0 []
+    where gap = 1
     
 getAxis_help :: Integer -> Integer -> Integer -> [Integer] -> [a] -> Integer -> [(Integer,a)] -> [(Integer,a)]
 getAxis_help l w gap (x:xs) (p:ps) head acc | ((head + gap < x) && (x + l < w)) = getAxis_help l w gap xs ps x (acc ++ [(x,p)])
@@ -65,8 +67,8 @@ toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure convertX convertY lenX lenY g window = InternalGraph {
         graph = g,
-        xAxisData = getAxis lenX (width window) (map left plotset) (map left $ dataSet g),
-        yAxisData = getAxis lenY (height window) (map right plotset) (map right $ dataSet g),
+        xAxisData = getAxis X lenX (width window) ((map left plotset),(map left $ dataSet g)),
+        yAxisData = getAxis Y lenY (height window) (unzip $ mySort (\(x,_) (y,_) -> y - x) $ zip (map right plotset) (map right $ dataSet g)),
         plottingSet = plotset,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
