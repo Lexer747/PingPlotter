@@ -6,10 +6,7 @@ import PingAPI
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Data.Time.LocalTime
-import Control.DeepSeq (NFData(..), force)
 import Utils (wordsWhen)
-
-($!!) f b =  f $ force b
 
 -- encapsulate the POSIXTime Stamp so we can change the show function hehe
 -- probably a better way than this
@@ -61,9 +58,6 @@ instance IOShow TimeStamp where
  
 instance IOShow Integer where
     ioShow a = return $ show a
-
-instance NFData TimeStamp where
-    rnf (MkTimeStamp a) = rnf a
     
 --convert a utc time into its timezoned one
 localizeTimeStamp :: TimeStamp -> IO String
@@ -98,14 +92,14 @@ getInitGraph :: String -> IO (Graph TimeStamp Integer)
 getInitGraph host = do
                         p0 <- getPing host
                         p1 <- getPing host
-                        return $!! initGraph p0 p1 host
+                        return $ initGraph p0 p1 host
            
 --given a graph created by 'initGraph' add another ping to its set          
 addPing ::  IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
 addPing graph = do
                     g <- graph
                     p <- getPing $ title g
-                    return $!! addPoint p g
+                    return $ addPoint p g
        
 fakeGraph :: Graph TimeStamp Integer
 fakeGraph = Graph {
