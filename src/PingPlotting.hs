@@ -9,27 +9,6 @@ import InternalGraph
 
 import Control.Monad.State.Strict
 
-{-
-
-
-start :: String -> IO ()
-start host = pingCycle $ getInitGraph host
-
-pingCycle :: IO (Graph TimeStamp Integer) -> IO ()
-pingCycle graph = do 
-                    g <- graph
-                    partialPlot g
-                    pingCycle $! addPing graph --perform a strict evaluation
-            
-            
-getSample :: String -> IO (Graph TimeStamp Integer)
-getSample host = cycle' init
-    where init = getInitGraph host
-
-cycle' :: IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
-cycle' graph = cycle' $! addPing $! graph
--}
-
 type GraphState = State (IO (Graph TimeStamp Integer)) (IO ())
 
 startCycle :: String -> IO ()
