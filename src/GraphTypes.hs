@@ -3,6 +3,7 @@ module GraphTypes
 where
 
 import System.Console.Terminal.Size
+import Control.DeepSeq (NFData(..))
 
 --allow a different form of show
 class IOShow a where
@@ -21,6 +22,16 @@ data Graph a b = Graph {
         yAxis :: String, --name of y axis
         dataSet :: [(a,b)] -- the points in the graph
     }
+  
+instance (NFData a, NFData b) => NFData (Graph a b) where
+    rnf g = rnf (maxX g) `seq`
+                rnf (minX g) `seq`
+                rnf (maxY g) `seq`
+                rnf (minY g) `seq`
+                rnf (title g) `seq`
+                rnf (xAxis g) `seq`
+                rnf (yAxis g) `seq`
+                rnf (dataSet g)
        
 instance (Show a, Show b) => Show (Graph a b) where
     show g = "Graph { \n   maxX = " ++ (show $ maxX g) ++ ", minX = " ++ (show $ minX g) ++ ", maxY = " ++ (show $ maxY g) ++ ", minY = " ++ (show $ minY g) ++ ",\n\
@@ -39,6 +50,17 @@ data InternalGraph a b = InternalGraph {
         lineSet :: [([(Integer,Integer)], Char)],
         window :: Window Integer
     }
+  
+instance (NFData a) => NFData (Window a) where
+    rnf w = rnf (height w) `seq` rnf (width w)
+    
+instance (NFData a, NFData b) => NFData (InternalGraph a b) where
+    rnf g = rnf (graph g) `seq`
+                rnf (xAxisData g) `seq`
+                rnf (yAxisData g) `seq`
+                rnf (plottingSet g) `seq`
+                rnf (lineSet g) `seq`
+                rnf (window g)
 
 instance (Show a, Show b) => Show (InternalGraph a b) where
     show g = "Internal Graph { \n   minX = " ++ (show $ minX $ graph g) ++ ", maxX = " ++ (show $ maxX $ graph g) ++ ", minY = " ++ (show $ minY $ graph g) ++ ", maxY = " ++ (show $ maxY $ graph g) ++ ",\n\

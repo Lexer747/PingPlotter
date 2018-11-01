@@ -37,8 +37,8 @@ startCycle host = plottingCycle $ getInitGraph host
 
 plottingCycle :: IO (Graph TimeStamp Integer) -> IO ()
 plottingCycle state = do
-                    let (io, newState) = runState evalGraphState state
-                    io
+                    let (printPlot, newState) = runState evalGraphState state
+                    printPlot
                     plottingCycle newState
 
 evalGraphState :: GraphState
