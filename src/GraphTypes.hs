@@ -21,13 +21,13 @@ data Graph a b = Graph {
         yAxis :: String, --name of y axis
         dataSet :: [(a,b)] -- the points in the graph
     }
-       
+
 instance (Show a, Show b) => Show (Graph a b) where
     show g = "Graph { \n   maxX = " ++ (show $ maxX g) ++ ", minX = " ++ (show $ minX g) ++ ", maxY = " ++ (show $ maxY g) ++ ", minY = " ++ (show $ minY g) ++ ",\n\
              \   title = " ++ (show $ title g) ++ ",\n\
              \   axes = {" ++ (show $ xAxis g) ++ ", " ++ (show $ yAxis g) ++ "}, \n\ 
              \   dataSet = " ++ (show $ dataSet g) ++ " \n}"
-      
+
 -- a graph structure which also contains a another set of point which are the line segements for the original data set
 -- a = type of x-axis
 -- b = type of y-axis

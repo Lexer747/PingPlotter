@@ -16,19 +16,18 @@ startCycle host = plottingCycle $ getInitGraph host
 
 plottingCycle :: IO (Graph TimeStamp Integer) -> IO ()
 plottingCycle state = do
-                    let (printPlot, newState) = runState evalGraphState state
-                    printPlot
-                    plottingCycle newState
+    let (printPlot, newState) = runState evalGraphState state
+    printPlot
+    plottingCycle newState
 
 evalGraphState :: GraphState
 evalGraphState = do
-    graph <- get
-    put $ addPing graph
-    return (do
-                g <- graph
-                partialPlot g)
+        graph <- get
+        put $ addPing graph
+        return (do
+                    g <- graph
+                    partialPlot g)
 
-    
 partialPlot :: Graph TimeStamp Integer -> IO ()
 partialPlot g = do
     clear

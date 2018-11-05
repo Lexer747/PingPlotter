@@ -91,15 +91,15 @@ gradient _              = '-'
 toInternal :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
 toInternal convertX convertY g = do
-                lX <- ioShow (maxX g)
-                lY <- ioShow (maxY g)
-                let lenX = fromIntegral $ length lX
-                let lenY = fromIntegral $ length lY
-                s <- size
-                case s of
-                    Just window -> return $ Just $ toInternalPure convertX convertY lenX lenY g (adjustSize window)
-                    Nothing -> return Nothing
-                       
+    lX <- ioShow (maxX g)
+    lY <- ioShow (maxY g)
+    let lenX = fromIntegral $ length lX
+    let lenY = fromIntegral $ length lY
+    s <- size
+    case s of
+        Just window -> return $ Just $ toInternalPure convertX convertY lenX lenY g (adjustSize window)
+        Nothing -> return Nothing
+
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
 adjustSize :: Window Integer -> Window Integer
 adjustSize win = Window {height = h, width = w}

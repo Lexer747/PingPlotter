@@ -42,13 +42,12 @@ addBlankAxesToPlot plot g = addPointToPlot (0,0) '+' base1
           base0 = foldr (\x p -> addPointToPlot x '-' p) plot (zip [0..w] [0,0..])
           w = width $ window g
           h = height $ window g
-          
+
 -- add the names of the axes to the graph, x horizontally to the end of the axis, and y horizontally to the top of axis
 addAxesNameToPlot:: Plot -> InternalGraph a b -> Plot
 addAxesNameToPlot plot g = addStringToPlot Y (1, (height $ window g)) (yAxis $ graph g) base0
     where base0 = addStringToPlot X ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
-    
-    
+
 -- fold over every point in the graph and add them to a given plot
 addGraphToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 addGraphToPlot plot g = foldr (\x p -> addPointToPlot x 'X' p) plot (plottingSet g)
@@ -84,8 +83,8 @@ addAxisToPlot _ _ plot = return plot
 -- add the numbers from the axis in the graph data to the plot
 addAxesToPlot :: (IOShow a, IOShow b) => Plot -> InternalGraph a b -> IO Plot
 addAxesToPlot plot g = do 
-        p <- addAxisToPlot Y (yAxisData g) plot
-        addAxisToPlot X (xAxisData g) p
+    p <- addAxisToPlot Y (yAxisData g) plot
+    addAxisToPlot X (xAxisData g) p
 
 ----------------------------------------------------------------
 
@@ -94,29 +93,27 @@ addAxesToPlot plot g = do
 graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe Plot)
 graphToPlot convertX convertY g = do
-                    maybeInt <- internal --convert to internal representation
-                                         --finding the scaled points to the screen
-                                         --and in between points
-                    case maybeInt of
-                        Nothing  -> return Nothing
-                        Just int -> do
-                                        let plot = populateGraph (initPlot (window int)) int --add all the points to the plot
-                                        p <- addAxesToPlot plot int 
-                                        return $ Just p
+        maybeInt <- internal --convert to internal representation
+                             --finding the scaled points to the screen
+                             --and in between points
+        case maybeInt of
+            Nothing  -> return Nothing
+            Just int -> do
+                   let plot = populateGraph (initPlot (window int)) int --add all the points to the plot
+                   p <- addAxesToPlot plot int 
+                   return $ Just p
     where internal = toInternal convertX convertY g
     
 unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) ->  Graph a b -> IO (Plot)
 unsafe_graphToPlot cX cY g = do
-                            maybeG <- graphToPlot cX cY g
-                            return $ fromJust maybeG
-    
+    maybeG <- graphToPlot cX cY g
+    return $ fromJust maybeG
+
 graphPrint :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO ()
 graphPrint cX cY g = do
-                    maybePlot <- graphToPlot cX cY g
-                    case maybePlot of 
-                        Nothing -> putStrLn "graphPrint Failed - cause: window size probably failed"
-                        Just plot -> putStr $ plotToPrintString plot
-
-
+    maybePlot <- graphToPlot cX cY g
+    case maybePlot of 
+        Nothing -> putStrLn "graphPrint Failed - cause: window size probably failed"
+        Just plot -> putStr $ plotToPrintString plot
