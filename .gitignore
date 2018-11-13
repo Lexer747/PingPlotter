@@ -1,11 +1,7 @@
-#Output Files
-Core/svg/Output.svg
-
-#Compile Files
+# Compile Files
 *.o
 *.hi
 *.exe
-/Samples/zoom
 
 # trivial gitignore file
 .cabal-sandbox/
@@ -14,8 +10,6 @@ cabal.project.local
 .ghc.environment.*
 cabal-dev/
 .hpc/
-*.hi
-*.o
 *.p_hi
 *.prof
 *.tix
@@ -41,28 +35,3 @@ register.sh
 *~
 .*.swp
 *.bak
-
-# GHC build
-
-Cabal/GNUmakefile
-Cabal/dist-boot/
-Cabal/dist-install/
-Cabal/ghc.mk
-
-
-# TAGS files
-TAGS
-tags
-
-# stack artifacts
-/.stack-work/
-
-# Shake artifacts
-.shake*
-progress.txt
-
-# test files
-register.sh
-
-# python artifacts from documentation builds
-*.pyc

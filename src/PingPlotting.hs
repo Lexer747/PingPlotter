@@ -2,6 +2,7 @@ module PingPlotting where
 
 import PingAPI
 import PingTypes
+import PingGraph
 import GraphTypes
 import GraphPlotter
 import GraphBuild
@@ -16,12 +17,12 @@ startCycle host = plottingCycle $ getInitGraph host
 
 plottingCycle :: IO (Graph TimeStamp Integer) -> IO ()
 plottingCycle state = do
-    let (printPlot, newState) = runState evalGraphState state
+    let (printPlot, newState) = runState graphState state
     printPlot
     plottingCycle newState
 
-evalGraphState :: GraphState
-evalGraphState = do
+graphState :: GraphState
+graphState = do
         graph <- get
         put $ addPing graph
         return (do
