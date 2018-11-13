@@ -11,7 +11,7 @@ import PingAPI
 import GraphBuild
 import PingTypes
 
-main = undefined
+main = putStrLn "Test"
 {-
 main :: IO ()
 main = do
