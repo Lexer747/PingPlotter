@@ -1,4 +1,4 @@
-module GraphTypes 
+module Graph.Types 
     (Graph(..), InternalGraph(..), Axis(..), IOShow(..))
 where
 

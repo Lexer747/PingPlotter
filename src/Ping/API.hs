@@ -1,4 +1,4 @@
-module PingAPI
+module Ping.API
     (pingInt, clear)
 where
 

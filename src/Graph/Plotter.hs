@@ -1,11 +1,11 @@
-module GraphPlotter where
+module Graph.Plotter where
 
 import System.Console.Terminal.Size
 import Data.List
 import Data.Array
 import Data.Maybe (fromJust)
-import InternalGraph
-import GraphTypes
+import Graph.Internal
+import Graph.Types
 import Utils
 
 --a plot is a rectangle 2D array of characters

@@ -1,10 +1,10 @@
-module InternalGraph 
+module Graph.Internal 
     (toInternal) 
 where
     
 import System.Console.Terminal.Size
-import GraphTypes
-import GraphBuild
+import Graph.Types
+import Graph.Build
 import Utils
  
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.

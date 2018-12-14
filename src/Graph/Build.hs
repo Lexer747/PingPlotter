@@ -1,6 +1,6 @@
-module GraphBuild where
+module Graph.Build where
 
-import GraphTypes
+import Graph.Types
 import Utils
 
 --packs a list of (x,y) values into a graph object

@@ -1,9 +1,9 @@
-module PingGraph where
+module Ping.Graph where
 
-import PingTypes
-import PingAPI
-import GraphTypes
-import GraphBuild (namedListToGraph, addPoint)
+import Ping.Types
+import Ping.API
+import Graph.Types
+import Graph.Build (namedListToGraph, addPoint)
 
 --given two starting pings create a graph with all the defaults set correctly
 initGraph :: Ping -> Ping -> String ->  Graph TimeStamp Integer

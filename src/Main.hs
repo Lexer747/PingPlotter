@@ -4,12 +4,15 @@ import Control.Monad
 import System.Environment
 import System.Console.Terminal.Size
 
-import InternalGraph
-import GraphPlotter
-import GraphTypes
-import PingAPI
-import GraphBuild
-import PingTypes
+import Graph.Internal
+import Graph.Build
+import Graph.Plotter
+import Graph.Types
+import Ping.API
+import Ping.Graph
+import Ping.Plotting
+import Ping.Types
+import Utils
 
 main = putStrLn "Test"
 {-

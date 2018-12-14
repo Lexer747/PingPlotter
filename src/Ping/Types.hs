@@ -1,8 +1,8 @@
-module PingTypes where
+module Ping.Types where
 
-import GraphTypes
-import GraphBuild
-import PingAPI
+import Graph.Types
+import Graph.Build
+import Ping.API
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Data.Time.LocalTime
