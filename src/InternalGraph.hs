@@ -65,7 +65,7 @@ getAxis_help _ _ _ [] [] _ acc = acc
 --intermediate points to draw.
 toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) => 
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
-toInternalPure convertX convertY lenX lenY g window = InternalGraph {
+toInternalPure cX cY lenX lenY g window = InternalGraph {
         graph = g,
         xAxisData = getAxis X lenX (width window) ((map left plotset),(map left $ dataSet g)),
         yAxisData = getAxis Y lenY (height window) (unzip $ mySort (\(x,_) (y,_) -> y - x) $ zip (map right plotset) (map right $ dataSet g)),
@@ -76,7 +76,7 @@ toInternalPure convertX convertY lenX lenY g window = InternalGraph {
     where
         h = fromIntegral $ height window --height must be the same type as the 'y' values
         w = fromIntegral $ width window --width must be the same type as the 'x' values
-        scaledSet = normalizeSet h w (convertX $ minX g) (convertX $ maxX g) (convertY $ minY g) (convertY $ maxY g) (mapA convertX convertY $ dataSet g)
+        scaledSet = normalizeSet h w (cX $ minX g) (cX $ maxX g) (cY $ minY g) (cY $ maxY g) (mapA cX cY $ dataSet g)
         plotset = mapS round scaledSet
 
 gradient :: RealFrac a => a -> Char
@@ -90,14 +90,14 @@ gradient _              = '-'
 -- take a graph and scale it to be fit to the screen
 toInternal :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO (Maybe (InternalGraph a b))
-toInternal convertX convertY g = do
+toInternal cX cY g = do
     lX <- ioShow (maxX g)
     lY <- ioShow (maxY g)
     let lenX = fromIntegral $ length lX
     let lenY = fromIntegral $ length lY
     s <- size
     case s of
-        Just window -> return $ Just $ toInternalPure convertX convertY lenX lenY g (adjustSize window)
+        Just window -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize window)
         Nothing -> return Nothing
 
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
