@@ -1,8 +1,7 @@
 module Graph.Internal 
     (toInternal) 
 where
-    
-import System.Console.Terminal.Size
+
 import Graph.Types
 import Graph.Build
 import Utils

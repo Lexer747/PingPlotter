@@ -1,5 +1,5 @@
 module Graph.Types 
-    (Graph(..), InternalGraph(..), Axis(..), IOShow(..))
+    (module Graph.Types, Graph(..), InternalGraph(..), Axis(..), IOShow(..), module System.Console.Terminal.Size)
 where
 --store the relevant graph Types, also basic graph functions
 

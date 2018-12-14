@@ -1,13 +1,13 @@
 module Graph.Plotter where
 -- Convert a graph Type into a Displayable plot
 
-import System.Console.Terminal.Size
-import Data.List
-import Data.Array
-import Data.Maybe (fromJust)
 import Graph.Internal
 import Graph.Types
 import Utils
+
+import Data.List
+import Data.Array
+import Data.Maybe (fromJust)
 
 --a plot is a rectangle 2D array of characters
 type Plot = Array Integer (Array Integer Char)

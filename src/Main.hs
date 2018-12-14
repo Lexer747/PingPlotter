@@ -2,7 +2,6 @@ module Main where
 
 import Control.Monad
 import System.Environment
-import System.Console.Terminal.Size
 
 import Graph.Internal
 import Graph.Build
