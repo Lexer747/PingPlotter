@@ -19,7 +19,8 @@ data Graph a b = Graph {
         title :: String, --the title of the graph
         xAxis :: String, --name of x axis
         yAxis :: String, --name of y axis
-        dataSet :: [(a,b)] -- the points in the graph
+        dataSet :: [(a,b)], -- the points in the graph
+        saveLocation :: String -- the location to save the graph
     }
 
 instance (Show a, Show b) => Show (Graph a b) where
@@ -32,12 +33,12 @@ instance (Show a, Show b) => Show (Graph a b) where
 -- a = type of x-axis
 -- b = type of y-axis
 data InternalGraph a b = InternalGraph {
-        graph :: Graph a b,
-        xAxisData :: [(Integer,a)],
-        yAxisData :: [(Integer,b)],
-        plottingSet :: [(Integer,Integer)],
-        lineSet :: [([(Integer,Integer)], Char)],
-        window :: Window Integer
+        graph :: Graph a b, --the graph we want to represent
+        xAxisData :: [(Integer,a)], --a selection of data points we plot on the axis to label it
+        yAxisData :: [(Integer,b)], --same as above but for y
+        plottingSet :: [(Integer,Integer)], --the scaled data set, fitting inside the window
+        lineSet :: [([(Integer,Integer)], Char)], --the inbetween lines for each pair of points
+        window :: Window Integer --the size of the window, everything is scaled to this
     }
 
 instance (Show a, Show b) => Show (InternalGraph a b) where

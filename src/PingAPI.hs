@@ -16,7 +16,8 @@ parsePingString s = do
     let match = (result =~ groupRegex :: String) =~ countRegex :: String
     return match
 
-[groupRegex, countRegex] = ["time[=<][0-9]+ms", "[0-9]+"]
+groupRegex = "time[=<][0-9]+ms"
+countRegex = "[0-9]+"
 
 pingExeStr :: String
 pingExeStr = "C:\\Windows\\System32\\PING.EXE"

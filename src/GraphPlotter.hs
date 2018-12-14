@@ -8,12 +8,13 @@ import InternalGraph
 import GraphTypes
 import Utils
 
+--a plot is a rectangle 2D array of characters
 type Plot = Array Integer (Array Integer Char)
 
 -- chars used for the graph --
 intrapunct = '·' --a centralized point
 blank = ' ' -- a blank char
-------------------------------
+---------------------------------------------------
 
 --initalize an empty plot
 initPlot :: Window Integer -> Plot
@@ -24,11 +25,11 @@ initPlot window = array (0,h) [ (i, (array (0,w) [(i,blank) | i <- [0..w]])) | i
 plotToPrintString :: Plot -> String
 plotToPrintString p = removeLast $ unlines $ reverse $ map elems $ elems p
 
---add a point with a representative char 
+--add a point with a representative char
 addPointToPlot :: (Integer, Integer) -> Char -> Plot -> Plot
 addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
     where xrow = plot ! y
-    
+
 --adds a string to a plot, the first char starts at the specified point (x,y), and the last
 --char will be the at the point (x+len, y)
 addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
@@ -56,9 +57,12 @@ addGraphToPlot plot g = foldr (\x p -> addPointToPlot x 'X' p) plot (plottingSet
 addGradientToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet g)
 
+-- centrally put the title on the plot
 addTitleToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
 addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
     where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 2)
+
+-----------------------------------------------------------------
 
 -- combine all the add functions into one function to fill and blank plot with a graph
 -- note: the order in which the functions are called is the order in which they are painted

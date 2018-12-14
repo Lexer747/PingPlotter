@@ -5,12 +5,13 @@ import Utils
 
 --packs a list of (x,y) values into a graph object
 listToGraph :: (Ord a, Ord b) => [(a,b)] -> Graph a b
-listToGraph list = namedListToGraph list "untitled" ("unnamed-x","unnamed-y")
+listToGraph list = namedListToGraph list "untitled" ("unnamed-x","unnamed-y") "Untitled.ping"
 
 --given a list and a title it will pack the list into a graph object, setting the default min and max value based
 --on the input of the list
-namedListToGraph :: (Ord a, Ord b) => [(a,b)] -> String -> (String, String) -> Graph a b
-namedListToGraph list name (xaxis,yaxis)  = Graph {
+namedListToGraph :: (Ord a, Ord b) => 
+    [(a,b)] -> String -> (String, String) -> String -> Graph a b
+namedListToGraph list name (xaxis,yaxis) file = Graph {
             maxX = xmax,
             minX = xmin,
             maxY = ymax,
@@ -18,7 +19,8 @@ namedListToGraph list name (xaxis,yaxis)  = Graph {
             title = name,
             xAxis = xaxis,
             yAxis = yaxis,
-            dataSet = list
+            dataSet = list,
+            saveLocation = file
         }
     where
     (x,y) = unzip list
@@ -28,7 +30,7 @@ namedListToGraph list name (xaxis,yaxis)  = Graph {
 -- edit the list of points in the graph with the function, and rebuild the constraint
 -- slow as a whole new graph is made, so an O(n) search occurs for every call
 editGraph :: (Ord a, Ord b) => ([(a,b)] -> [(a,b)]) -> Graph a b -> Graph a b
-editGraph func graph = namedListToGraph newSet (title graph) (xAxis graph, yAxis graph)
+editGraph func graph = namedListToGraph newSet (title graph) (xAxis graph, yAxis graph) (saveLocation graph)
     where
         newSet = func (dataSet graph)
 
