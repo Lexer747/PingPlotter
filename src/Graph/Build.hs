@@ -1,5 +1,5 @@
 module Graph.Build where
---this module will a build a graph Type from input
+--this module will build a graph Type from input
 
 import Graph.Types
 import Utils

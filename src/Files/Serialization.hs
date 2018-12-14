@@ -1,4 +1,4 @@
-module Files.Binary where
+module Files.Serialization where
 
 import Graph.Types
 import Ping.Types
