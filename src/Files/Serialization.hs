@@ -1,4 +1,6 @@
-module Files.Serialization where
+module Files.Serialization
+    (saveGraph, readPingGraph)
+where
 
 import Graph.Types
 import Ping.Types
@@ -21,7 +23,7 @@ instance (Binary a, Binary b) => Binary (Graph a b) where
         put (maxX g)
         put (minX g)
         put (maxY g)
-        put (minX g)
+        put (minY g)
         put (title g)
         put (xAxis g)
         put (yAxis g)

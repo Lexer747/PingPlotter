@@ -1,17 +1,12 @@
 module Ping.Display where
---actually draw the graph to the window
+--actually draw a ping graph to the window
 
-import Ping.API
+import Ping.API (clear)
 import Ping.Types
-import Ping.Graph
 import Graph.Types
-import Graph.Plotter
-import Graph.Build
-import Graph.Internal
+import Graph.Plotter (graphPrint)
 
-import Control.Monad.State.Strict
-
-partialPlot :: Graph TimeStamp Integer -> IO ()
-partialPlot g = do
+drawGraph :: Graph TimeStamp Integer -> IO ()
+drawGraph g = do
     clear
     graphPrint id fromIntegral g
