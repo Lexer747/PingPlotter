@@ -29,9 +29,11 @@ register.sh
 
 
 # editor temp files
-
 *#
 .#*
 *~
 .*.swp
 *.bak
+
+# Ping Specific files
+*.ping
