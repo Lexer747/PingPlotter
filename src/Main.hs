@@ -10,7 +10,7 @@ import Graph.Plotter
 import Graph.Types
 import Ping.API
 import Ping.Graph
-import Ping.Plotting
+import Ping.Display
 import Ping.Types
 import Utils
 

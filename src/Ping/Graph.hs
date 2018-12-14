@@ -1,4 +1,5 @@
 module Ping.Graph where
+-- Build a graph containing ping values
 
 import Ping.Types
 import Ping.API

@@ -1,4 +1,5 @@
-module Ping.Plotting where
+module Ping.Display where
+--actually draw the graph to the window
 
 import Ping.API
 import Ping.Types

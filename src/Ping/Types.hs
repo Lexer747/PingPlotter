@@ -1,4 +1,5 @@
 module Ping.Types where
+-- All the types we need to store Pings
 
 import Graph.Types
 import Graph.Build

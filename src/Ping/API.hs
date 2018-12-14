@@ -1,6 +1,7 @@
 module Ping.API
     (pingInt, clear)
 where
+--communicate with underlying OS to get ping values, currently windows specific
 
 import System.Process
 import System.Environment

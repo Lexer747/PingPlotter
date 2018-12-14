@@ -1,4 +1,5 @@
 module Graph.Plotter where
+-- Convert a graph Type into a Displayable plot
 
 import System.Console.Terminal.Size
 import Data.List

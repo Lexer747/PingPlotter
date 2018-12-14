@@ -4,7 +4,7 @@ module Utils (
 
 import Data.List (sort)
 
---removes all duplicate elements from a list, ands sorts it
+--removes all duplicate elements from a list, and sorts it
 --[1,2,2] -> [1,2]
 --[2,1,1] -> [1,2]
 unique :: Ord a => [a] -> [a]
@@ -23,7 +23,8 @@ rm (x:y:xs)
 rmdup (x:xs) | x `elem` xs = rmdup xs
              | otherwise   = x:(rmdup xs)
 rmdup []                   = []
-    
+
+-- taking things out of tuples
 right (_,x) = x
 left (x,_)  = x
 
@@ -44,9 +45,11 @@ getMinMax_ (x:xs) (a,b) | x > b = getMinMax_ xs (a,x)
 getMinMax_ (_:xs) acc           = getMinMax_  xs acc
 getMinMax_ [] acc               = acc
 
+--given a function, apply it to a tuple which is 2 of the same type
 symmetric :: (a -> b) -> (a,a) -> (b,b)
 symmetric f (x,y) = (f x,f y)
 
+-- given 2 functions, apply each one to half the tuple each
 asymmetric :: (a -> c) -> (b -> d) -> (a,b) -> (c,d)
 asymmetric f w (x,y)= (f x,w y)
 
@@ -58,17 +61,21 @@ mapS f xs = map (symmetric f) xs
 mapA :: (a -> c) -> (b -> d) -> [(a, b)] -> [(c, d)]
 mapA f w xs = map (asymmetric f w) xs
 
+-- O(n) removal of the last char
 removeLast :: String -> String
 removeLast (x:[])   = []
 removeLast (x:xs)   = x:(removeLast xs)
 removeLast []       = []
 
+-- see words, but use a predicate instead spaces
 wordsWhen :: (Char -> Bool) -> String -> [String]
 wordsWhen p s =  case dropWhile p s of
     "" -> []
     s' -> w : wordsWhen p s''
         where (w, s'') = break p s'
 
+--sort given a function instead of on the Ord class
+-- since some types cannot have their Ord definition overwritten easily
 mySort :: (a -> a -> Integer) -> [a] -> [a]
 mySort _ []     = []
 mySort f (x:xs) = let small = mySort f [a | a <- xs, (f x a) > 0 ]
