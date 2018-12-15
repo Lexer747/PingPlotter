@@ -76,8 +76,8 @@ wordsWhen p s =  case dropWhile p s of
 
 --sort given a function instead of on the Ord class
 -- since some types cannot have their Ord definition overwritten easily
-mySort :: (a -> a -> Integer) -> [a] -> [a]
+mySort :: (a -> a -> Bool) -> [a] -> [a]
 mySort _ []     = []
-mySort f (x:xs) = let small = mySort f [a | a <- xs, (f x a) > 0 ]
-                      big   = mySort f [a | a <- xs, (f x a) >= 0]
+mySort f (x:xs) = let small = mySort f [a | a <- xs, f x a]
+                      big   = mySort f [a | a <- xs, not $ f x a]
                   in small ++ [x] ++ big

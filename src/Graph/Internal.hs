@@ -1,5 +1,5 @@
 module Graph.Internal 
-    (toInternal, processSet) 
+    (toInternal, filterAxis) 
 where
 
 import Graph.Types
@@ -58,10 +58,17 @@ getLines _ _ = []
 
 -- filter out the points which are too close too each other, or spill off the end
 filterAxis :: Axis -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)]
-filterAxis axis len window points = filterAxisHelp axis len window sorted
-    where sorted = mySort (\(x,_) (y,_) -> x - y) points
+filterAxis Y _   window points = filterAxisHelp 1 window 1 sorted []
+    where sorted = mySort (\(x,_) (y,_) -> x > y) points
+filterAxis X len window points = filterAxisHelp (len + 1) window (len + 1) sorted []
+    where sorted = mySort (\(x,_) (y,_) -> x > y) points
 
-filterAxisHelp = undefined
+filterAxisHelp :: Integer -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)] -> [(Integer,a)]
+filterAxisHelp _ _ _ [] acc = acc
+filterAxisHelp gap window prev ((p,a):ps) acc =
+    if ((p + gap) > prev) && ((p + gap) < window) --if the cur point is spread out enough and wont spill
+        then filterAxisHelp gap window (p + gap) ps (acc ++ [(p,a)])
+        else filterAxisHelp gap window prev ps acc
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
@@ -69,8 +76,8 @@ toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) =>
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
 toInternalPure cX cY lenX lenY g window = InternalGraph {
         graph = g,
-        xAxisData = xAxisDataList,--getAxis X lenX (width window) xAxisDataList,
-        yAxisData = yAxisDataList,--getAxis Y lenY (height window) yAxisDataList,
+        xAxisData = filterAxis X lenX (width window) xAxisDataList,
+        yAxisData = filterAxis Y lenY (height window) yAxisDataList,
         plottingSet = plotset,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
         window = window
@@ -103,6 +110,7 @@ toInternal cX cY g = do
     lY <- ioShow (maxY g)
     let lenX = fromIntegral $ length lX
     let lenY = fromIntegral $ length lY
+    putStrLn ("lenX: " ++ show lenX)
     s <- size
     case s of
         Just window -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize window)
