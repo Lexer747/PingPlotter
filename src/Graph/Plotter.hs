@@ -1,4 +1,4 @@
-module Graph.Plotter where
+module Graph.Plotter (graphToPlot, plotToPrintString) where
 -- Convert a graph Type into a Displayable plot
 
 import Graph.Internal
@@ -114,11 +114,3 @@ unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, O
 unsafe_graphToPlot cX cY g = do
     maybeG <- graphToPlot cX cY g
     return $ fromJust maybeG
-
-graphPrint :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
-    (a -> x) -> (b -> x) -> Graph a b -> IO ()
-graphPrint cX cY g = do
-    maybePlot <- graphToPlot cX cY g
-    case maybePlot of 
-        Nothing -> putStrLn "graphPrint Failed - cause: window size probably failed"
-        Just plot -> putStr $ plotToPrintString plot
