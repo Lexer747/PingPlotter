@@ -80,4 +80,4 @@ mySort :: (a -> a -> Integer) -> [a] -> [a]
 mySort _ []     = []
 mySort f (x:xs) = let small = mySort f [a | a <- xs, (f x a) > 0 ]
                       big   = mySort f [a | a <- xs, (f x a) >= 0]
-                  in  small ++ [x] ++ big
+                  in small ++ [x] ++ big
