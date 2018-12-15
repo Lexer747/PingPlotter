@@ -120,31 +120,3 @@ adjustSize :: Window Integer -> Window Integer
 adjustSize win = Window {height = h, width = w}
     where h = (height win) - 1
           w = (width win) - 1
-
-{-
--- normalize a set of points so that the new set has points scaled in x scaled between 0 and w, and y points are scaled between 0 and h
--- h = new y max
--- w = new x max
--- x = old min x
--- x' = old max x
--- y = old min y
--- y' = old max y
--- set = list of (x,y) points
-normalizeSet :: (RealFrac a, RealFrac b) => b -> a -> a -> a -> b -> b -> [(a,b)] -> [(a,b)]
-normalizeSet h w _ _  _ _ (_:[]) = [(w/2,h/2)] 
-normalizeSet h w x x' y y' set = mapA (normalize x x' 0 w) (normalize y y' 0 h) set
-
--- getAxis takes an axis, an integer which corresponds the size of the screen in that axis
--- then the min and max values for the axis, and it will return a list of points and axis labels
--- to be drawn
-getAxis :: Axis -> Integer -> Integer ->  ([Integer],[a]) -> [(Integer, a)]
-getAxis X len window (axispoints,plotpoints) = getAxis_help len window gap axispoints plotpoints 0 []
-    where gap = len + 1
-getAxis Y len window (axispoints,plotpoints) = getAxis_help len window gap axispoints plotpoints 0 []
-    where gap = 1
-    
-getAxis_help :: Integer -> Integer -> Integer -> [Integer] -> [a] -> Integer -> [(Integer,a)] -> [(Integer,a)]
-getAxis_help l w gap (x:xs) (p:ps) head acc | ((head + gap < x) && (x + l < w)) = getAxis_help l w gap xs ps x (acc ++ [(x,p)])
-getAxis_help l w gap (x:xs) (p:ps) head acc | otherwise = getAxis_help l w gap xs ps head acc
-getAxis_help _ _ _ [] [] _ acc = acc
--}
