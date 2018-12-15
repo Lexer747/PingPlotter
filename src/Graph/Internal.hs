@@ -60,14 +60,14 @@ getLines _ _ = []
 filterAxis :: Axis -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)]
 filterAxis Y _   window points = filterAxisHelp 1 window 1 sorted []
     where sorted = mySort (\(x,_) (y,_) -> x > y) points
-filterAxis X len window points = filterAxisHelp (len + 1) window (len + 1) sorted []
+filterAxis X len window points = filterAxisHelp len window 1 sorted []
     where sorted = mySort (\(x,_) (y,_) -> x > y) points
 
 filterAxisHelp :: Integer -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)] -> [(Integer,a)]
-filterAxisHelp _ _ _ [] acc = acc
+filterAxisHelp _ _ _ [] acc                   = acc
 filterAxisHelp gap window prev ((p,a):ps) acc =
-    if ((p + gap) > prev) && ((p + gap) < window) --if the cur point is spread out enough and wont spill
-        then filterAxisHelp gap window (p + gap) ps (acc ++ [(p,a)])
+    if (p > (prev + gap)) && ((p + gap) < window)
+        then filterAxisHelp gap window p ps (acc ++ [(p,a)])
         else filterAxisHelp gap window prev ps acc
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
@@ -110,7 +110,6 @@ toInternal cX cY g = do
     lY <- ioShow (maxY g)
     let lenX = fromIntegral $ length lX
     let lenY = fromIntegral $ length lY
-    putStrLn ("lenX: " ++ show lenX)
     s <- size
     case s of
         Just window -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize window)
