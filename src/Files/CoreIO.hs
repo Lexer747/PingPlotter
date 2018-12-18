@@ -34,7 +34,7 @@ setBuffer :: Int -> IO ()
 setBuffer i = hSetBuffering stdout (BlockBuffering $ Just i)
 
 adjustBuffer :: String -> IO ()
-adjustBuffer s = let size = (length s) * 64 in
+adjustBuffer s = let size = (length s) * 8 in
                  do
                     bufferMode <- hGetBuffering stdout
                     case bufferMode of
@@ -76,3 +76,5 @@ mainInstance :: String -> IO ()
 mainInstance file = do
                         g <- readPingGraph file
                         drawGraph g
+ 
+test = hGetEncoding stdout
