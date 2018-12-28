@@ -6,16 +6,33 @@ import Ping.API
 import Graph.Types
 import Graph.Build (namedListToGraph, addPoint)
 
+pingRetry :: Int
+pingRetry = 10
+
 --given two starting pings create a graph with all the defaults set correctly
 initGraph :: Ping -> Ping -> String ->  Graph TimeStamp Integer
 initGraph p0 p1 host = namedListToGraph [p0,p1] host ("Time", "Ping (ms)") (host ++ ".ping")
 
---ping a host
-getPing :: String -> IO Ping
-getPing host = do
-    t <- getTimeStamp
+--ping a host (Nothing is a failed ping)
+getMaybePing :: String -> IO (Maybe Ping)
+getMaybePing host = do
+    t <- getTimeStamp --can't fail (lol?)
     p <- pingInt host
-    return (t,p)
+    case p of
+        Just p' -> return $ Just (t,p')
+        Nothing -> return Nothing
+
+--gets a ping, will try 'pingRetry' times upon fails, if it fails 'pingRetry' times it will just crash 
+getPing :: String -> IO Ping
+getPing host = getPing_help host pingRetry
+
+getPing_help :: String -> Int -> IO Ping
+getPing_help host 0 = error $ "Failed to ping \"" ++ host ++ "\", tried " ++ (show pingRetry) ++ " times"
+getPing_help host n = do
+        p <- getMaybePing host
+        case p of
+            Just ping -> return ping
+            Nothing   -> getPing_help host (n - 1)
 
 --given a host name initialize a graph with two pings
 getInitGraph :: String -> IO (Graph TimeStamp Integer)

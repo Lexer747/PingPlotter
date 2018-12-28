@@ -13,7 +13,6 @@ ping :: String -> IO String
 ping s = readCreateProcess (proc pingExeStr [s, "-n", "1"]) ""
 
 --use a regex to get out the value of the ping
---TODO handle no found ping value
 parsePingString :: IO String -> IO String
 parsePingString s = do
     result <- s
@@ -28,10 +27,13 @@ pingExeStr = "C:\\Windows\\System32\\PING.EXE"
 
 --Combine all the functions
 --given a host return the IO wrapped ping value
-pingInt :: String -> IO Integer
-pingInt s = do 
+-- OR nothing if the ping failed for some reason
+pingInt :: String -> IO (Maybe Integer)
+pingInt s = do
         n <- p
-        return $ read n
+        case n of
+            [] -> return $ Nothing
+            _  -> return $ Just $ read n
     where p = parsePingString $ ping s
 
 clear = system "cls"
