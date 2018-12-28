@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Ping.API
     (pingInt, clear)
 where
@@ -7,10 +9,13 @@ import System.Process
 import System.Environment
 import Text.Regex.Posix
 import GHC.IO.Handle
+import Control.Exception --for catching errors
 
 --literally call the windows ping CLI program
 ping :: String -> IO String
-ping s = readCreateProcess (proc pingExeStr [s, "-n", "1"]) ""
+ping s = catch (readCreateProcess (proc pingExeStr [s, "-n", "1"]) "")
+               (\(e :: IOException) -> do {-should log error-} 
+                        return "") --empty string on ping.exe error
 
 --use a regex to get out the value of the ping
 parsePingString :: IO String -> IO String
