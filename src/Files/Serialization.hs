@@ -63,6 +63,6 @@ readGraph s = do
                 Right g -> return g
                 Left (_,err) -> error err --TODO
 
---tell the runtime which type to convert the bytes to
+--tell the compiler which type to convert the bytes to
 readPingGraph :: String -> IO (Graph TimeStamp Integer)
 readPingGraph = readGraph

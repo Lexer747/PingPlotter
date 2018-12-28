@@ -3,6 +3,7 @@ module Main where
 import Control.Monad
 import System.Environment
 
+--import all our files
 import Graph.Internal
 import Graph.Build
 import Graph.Plotter
