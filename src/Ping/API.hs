@@ -12,10 +12,11 @@ import GHC.IO.Handle
 import Control.Exception --for catching errors
 
 --literally call the windows ping CLI program
+--try catch the program
 ping :: String -> IO String
 ping s = catch (readCreateProcess (proc pingExeStr [s, "-n", "1"]) "")
-               (\(e :: IOException) -> do {-should log error-} 
-                        return "") --empty string on ping.exe error
+               (\(e :: IOException) -> do {-should log error-}
+                                        return "") --empty string on ping.exe error
 
 --use a regex to get out the value of the ping
 parsePingString :: IO String -> IO String
@@ -37,7 +38,7 @@ pingInt :: String -> IO (Maybe Integer)
 pingInt s = do
         n <- p
         case n of
-            [] -> return $ Nothing
+            [] -> return $ Nothing --regex matched nothing, or error
             _  -> return $ Just $ read n
     where p = parsePingString $ ping s
 

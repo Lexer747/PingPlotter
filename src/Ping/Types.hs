@@ -54,13 +54,13 @@ instance RealFrac TimeStamp where
 
 instance Show TimeStamp where
     show (MkTimeStamp a) = show $ posixSecondsToUTCTime a
-    
+
 instance IOShow TimeStamp where
     ioShow = localizeTimeStamp
- 
+
 instance IOShow Integer where
-    ioShow a = return $ show a
-    
+    ioShow a = return $ show a --wrapper
+
 --convert a utc time into its timezoned one
 localizeTimeStamp :: TimeStamp -> IO String
 localizeTimeStamp (MkTimeStamp t) = do

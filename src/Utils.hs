@@ -67,7 +67,7 @@ removeLast (x:[])   = []
 removeLast (x:xs)   = x:(removeLast xs)
 removeLast []       = []
 
--- see words, but use a predicate instead spaces
+-- see {Data.List (words)}, but use a predicate instead spaces
 wordsWhen :: (Char -> Bool) -> String -> [String]
 wordsWhen p s =  case dropWhile p s of
     "" -> []

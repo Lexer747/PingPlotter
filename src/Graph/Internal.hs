@@ -5,7 +5,6 @@ where
 import Graph.Types
 import Graph.Build
 import Utils
-import Data.List (sort)
 
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.
 -- where x = cur, a = min, b = max, c = newMin, d = newMax, and the result is scaled x
