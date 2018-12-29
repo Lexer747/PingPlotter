@@ -11,6 +11,7 @@ import Utils
 normalize :: RealFrac a => a -> a -> a -> a -> a -> a
 normalize min max newMin newMax cur = (((newMax - newMin) * (cur - min)) / (max - min)) + newMin
 
+
 processSet :: (RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> x -> x -> a -> a -> b -> b -> [(a,b)] -> [((x,x),(a,b))]
 processSet _ _ h w _ _ _ _ ((a,b):[]) = [((w/2,h/2),(a,b))] 
@@ -23,9 +24,9 @@ processSetHelp :: (RealFrac x, Enum x, Ord x) =>
     x -> x -> a -> a -> b -> b -> [(a,b)] -> [((x,x),(a,b))] -> [((x,x),(a,b))] 
 processSetHelp cX cY h w x x' y y' [] acc = acc --base case
 processSetHelp cX cY h w x x' y y' ((a,b):set) acc = processSetHelp cX cY h w x x' y y' set newAcc
-    where newX = normalize (cX x) (cX x') 0 w (cX a)
-          newY = normalize (cY y) (cY y') 0 h (cY b)
-          newAcc = acc ++ [((newX, newY),(a,b))]
+    where newX = normalize (cX x) (cX x') 1 (w - 1) (cX a) --scale the x value
+          newY = normalize (cY y) (cY y') 1 (h - 1) (cY b) --scale the y value
+          newAcc = acc ++ [((newX, newY),(a,b))] --combine the new scaled values with the old values
 
 --map round over all the scaled points
 roundProcessedSet :: (RealFrac x, Enum x, Ord x) =>
@@ -94,7 +95,7 @@ toInternalPure cX cY lenX lenY g window = InternalGraph {
         yAxisDataList = mapA right right roundedSet --same as above but for y
 
 gradient :: RealFrac a => a -> Char
---doesn't work great -_-
+-- ^doesn't work great -_-
 gradient x | x >= 8     = '|'
 gradient x | x <= (-8)  = '|'
 gradient x | x >= 2     = '/'
