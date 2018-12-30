@@ -3,11 +3,11 @@ module Graph.Plotter (graphToPlot, plotToPrintString) where
 
 import Graph.Internal
 import Graph.Types
+import Graph.Build (editGraph)
 import Utils
 
 import Data.List
 import Data.Array
-import Data.Maybe (fromJust)
 
 --a plot is a rectangle 2D array of characters
 type Plot = Array Integer (Array Integer Char)
@@ -109,9 +109,24 @@ graphToPlot convertX convertY g = do
                    p <- addAxesToPlot plot int 
                    return $ Just p
     where internal = toInternal convertX convertY g
-    
-unsafe_graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
-    (a -> x) -> (b -> x) ->  Graph a b -> IO (Plot)
-unsafe_graphToPlot cX cY g = do
-    maybeG <- graphToPlot cX cY g
-    return $ fromJust maybeG
+
+------------------------------------------------------------------
+
+-- given a scaling value take a sample of newest points which is then plotted
+--the number of points chosen is based on the scaling value, and the size of screen
+chooseGraphToPlot :: (Show a, Enum a, Ord a, Show b, Enum b, Ord b, IOShow a, IOShow b,
+    RealFrac x, Enum x, Ord x) =>
+        (a -> x) -> (b -> x) -> Double -> Graph a b -> IO (Maybe Plot)
+chooseGraphToPlot convertX convertY scale g = do
+    numToTake <- getSampleSize scale
+    let newG = editGraph (takeTail numToTake) g
+    graphToPlot convertX convertY newG
+
+getSampleSize :: Double -> IO Int
+getSampleSize scale | scale <= 0 = error "invalid scale called"
+getSampleSize scale | scale >= 5 = error "invalid scale called"
+getSampleSize scale = do
+    s <- size
+    case s of
+        Just window -> return $ ceiling $ ((fromIntegral $ width window) / 3) * scale
+        Nothing     -> error "could not find window size"

@@ -111,7 +111,7 @@ toInternal cX cY g = do
     lY <- ioShow (maxY g)
     let lenX = fromIntegral $ length lX
     let lenY = fromIntegral $ length lY
-    s <- size
+    s <- size --from System.Console.Terminal.Size
     case s of
         Just window -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize window)
         Nothing -> return Nothing

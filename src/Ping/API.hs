@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables #-} --for exceptions
 
 module Ping.API
     (pingInt, clear)
@@ -15,7 +15,7 @@ import Control.Exception --for catching errors
 --try catch the program
 ping :: String -> IO String
 ping s = catch (readCreateProcess (proc pingExeStr [s, "-n", "1"]) "")
-               (\(e :: IOException) -> do {-should log error-}
+               (\(e :: IOException) -> do --should log error
                                         return "") --empty string on ping.exe error
 
 --use a regex to get out the value of the ping

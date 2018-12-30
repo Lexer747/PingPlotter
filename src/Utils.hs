@@ -1,5 +1,5 @@
 module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, mySort
+    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, mySort, takeTail
     ) where
 
 import Data.List (sort)
@@ -31,7 +31,7 @@ left (x,_)  = x
 --ceiling integer division
 divide :: Integral a => a -> a -> a
 divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
-(\\) = divide
+(\\) = divide --infix
 
 -- takes a list an returns a tuple containing the smallest and largest element
 -- o(n) complexity
@@ -45,7 +45,7 @@ getMinMax_ (x:xs) (a,b) | x > b = getMinMax_ xs (a,x)
 getMinMax_ (_:xs) acc           = getMinMax_  xs acc
 getMinMax_ [] acc               = acc
 
---given a function, apply it to a tuple which is 2 of the same type
+--given a function, apply it to a tuple which is of the same type
 symmetric :: (a -> b) -> (a,a) -> (b,b)
 symmetric f (x,y) = (f x,f y)
 
@@ -81,3 +81,7 @@ mySort _ []     = []
 mySort f (x:xs) = let small = mySort f [a | a <- xs, f x a]
                       big   = mySort f [a | a <- xs, not $ f x a]
                   in small ++ [x] ++ big
+
+-- like take, but from the end of the list rather than the start
+takeTail :: Int -> [a] -> [a]
+takeTail i xs = reverse $ take i $ reverse xs
