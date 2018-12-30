@@ -27,15 +27,17 @@ plotToPrintString :: Plot -> String
 plotToPrintString p = removeLast $ unlines $ reverse $ map elems $ elems p
 
 --add a point with a representative char
+--at the point x,y add the char c
+--no bound checking - will just crash upon fail
 addPointToPlot :: (Integer, Integer) -> Char -> Plot -> Plot
 addPointToPlot (x,y) c plot = plot // [(y, (xrow // [(x,c)]))]
     where xrow = plot ! y
 
 --adds a string to a plot, the first char starts at the specified point (x,y), and the last
 --char will be the at the point (x+len, y)
-addStringToPlot :: Axis -> (Integer,Integer) -> String -> Plot -> Plot
-addStringToPlot _ (x,y) (c:cs) plot = addStringToPlot X (x+1,y) cs (addPointToPlot (x,y) c plot)
-addStringToPlot _ _     []     plot = plot
+addStringToPlot :: (Integer,Integer) -> String -> Plot -> Plot
+addStringToPlot (x,y) (c:cs) plot = addStringToPlot (x+1,y) cs (addPointToPlot (x,y) c plot)
+addStringToPlot _     []     plot = plot
       
 -- add the blank '-' and '|' characters to each side of plot
 addBlankAxesToPlot :: Plot -> InternalGraph a b -> Plot
@@ -47,8 +49,8 @@ addBlankAxesToPlot plot g = addPointToPlot (0,0) '+' base1
 
 -- add the names of the axes to the graph, x horizontally to the end of the axis, and y horizontally to the top of axis
 addAxesNameToPlot:: Plot -> InternalGraph a b -> Plot
-addAxesNameToPlot plot g = addStringToPlot Y (1, (height $ window g)) (yAxis $ graph g) base0
-    where base0 = addStringToPlot X ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
+addAxesNameToPlot plot g = addStringToPlot (1, (height $ window g)) (yAxis $ graph g) base0
+    where base0 = addStringToPlot ((width $ window g) - (fromIntegral $ length $ xAxis $ graph g),1) (xAxis $ graph g) plot
 
 -- fold over every point in the graph and add them to a given plot
 addGraphToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
@@ -60,7 +62,7 @@ addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c
 
 -- centrally put the title on the plot
 addTitleToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
-addTitleToPlot plot g = addStringToPlot X mid (title $ graph g) plot
+addTitleToPlot plot g = addStringToPlot mid (title $ graph g) plot
     where mid = (((width $ window g) `div` 2) - (fromIntegral $ length (title $ graph g) `div` 2), (height $ window g) - 2)
 
 -----------------------------------------------------------------
@@ -77,11 +79,11 @@ populateGraph p g = addTitleToPlot (addAxesNameToPlot (addGraphToPlot (addGradie
 addAxisToPlot :: (IOShow a) => Axis -> [(Integer, a)] -> Plot -> IO Plot
 addAxisToPlot X ((x,a):xs) plot = do 
                 str <- ioShow a
-                let p = addStringToPlot X (x,0) str plot
+                let p = addStringToPlot (x,0) str plot
                 addAxisToPlot X xs p
 addAxisToPlot Y ((y,a):ys) plot = do 
                 str <- ioShow a
-                let p = addStringToPlot Y (0,y) str plot
+                let p = addStringToPlot (0,y) str plot
                 addAxisToPlot Y ys p
 addAxisToPlot _ _ plot = return plot
     
@@ -92,7 +94,6 @@ addAxesToPlot plot g = do
     addAxisToPlot X (xAxisData g) p
 
 ----------------------------------------------------------------
-
 
 -- plot a graph
 graphToPlot :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>

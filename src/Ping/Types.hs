@@ -66,7 +66,8 @@ localizeTimeStamp :: TimeStamp -> IO String
 localizeTimeStamp (MkTimeStamp t) = do
     z <- getCurrentTimeZone --get the timezone of the user
     --then show that time in out timezone, and strip the date and milliseconds
-    return $ head $ wordsWhen (=='.') $ (!!) (wordsWhen (==' ') $ show $ utcToLocalTime z utc) 1
+    let stripped = head $ wordsWhen (=='.') $ (!!) (wordsWhen (==' ') $ show $ utcToLocalTime z utc) 1
+    return $ " " ++ stripped ++ " "
         where utc = posixSecondsToUTCTime t
 
 --get the current POSIX time

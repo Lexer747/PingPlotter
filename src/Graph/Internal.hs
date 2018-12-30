@@ -9,6 +9,7 @@ import Utils
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.
 -- where x = cur, a = min, b = max, c = newMin, d = newMax, and the result is scaled x
 normalize :: RealFrac a => a -> a -> a -> a -> a -> a
+normalize min max _ _ _ | min == max = error "normalize called with equal old min max"
 normalize min max newMin newMax cur = (((newMax - newMin) * (cur - min)) / (max - min)) + newMin
 
 
