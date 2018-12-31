@@ -12,6 +12,9 @@ import System.IO
 import Control.Concurrent
 import Data.Bits (shiftR)
 
+globalScale :: Double
+globalScale = 1.1
+
 --Given two conversion functions and a graph, actually plot the graph to cmd
 graphPrint :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Graph a b -> IO ()
@@ -22,14 +25,27 @@ graphPrint cX cY g = do
         Just plot -> buffer $ plotToPrintString plot
         -- ^ convert the plot to the string and buffer it to stdout
 
+chooseGraphPrint :: (Show a, Enum a, Ord a, Show b, Enum b, Ord b, IOShow a, IOShow b,
+    RealFrac x, Enum x, Ord x) =>
+    (a -> x) -> (b -> x) -> Double -> Graph a b -> IO ()
+chooseGraphPrint cX cY scale g = do
+    maybePlot <- chooseGraphToPlot cX cY scale g --plot the graph
+    case maybePlot of
+        Nothing -> buffer "graphPrint Failed - cause: window size probably failed"
+        Just plot -> buffer $ plotToPrintString plot
+        -- ^ convert the plot to the string and buffer it to stdout
+
 -- Given a Ping graph, draw it to the cmd
 drawGraph :: Graph TimeStamp Integer -> IO ()
 drawGraph g = do
     graphPrint id fromIntegral g
-    -- id - TimeStamp is already useable
-    -- fromIntegral - make it any number type
 
--- Given a number of chars, find the next power of 2 which is bigger than or equal
+-- Given a Ping graph, draw it to the cmd
+chooseDrawGraph :: Double -> Graph TimeStamp Integer -> IO ()
+chooseDrawGraph scale g = do
+    chooseGraphPrint id fromIntegral scale g
+
+-- Given a number of chars, find the next index power of 2 which is bigger than or equal
 -- findBuffer 18          = 32
 -- findBuffer (2^4) + ... = 2^5
 findBuffer :: Int -> Int
@@ -71,7 +87,7 @@ innerLoop graph = do
                     saveGraph g --save the graph to file (forces evaluation)
                     newG <- readPingGraph (saveLocation g) --read the new graph
                     threadDelay 50
-                    drawGraph newG --actually draw the graph
+                    chooseDrawGraph globalScale newG --actually draw the graph
                     innerLoop $ return newG --repeat with the new graph
 
 singleLoop :: String -> IO ()

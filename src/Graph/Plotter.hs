@@ -1,4 +1,4 @@
-module Graph.Plotter (graphToPlot, plotToPrintString) where
+module Graph.Plotter (graphToPlot, chooseGraphToPlot, plotToPrintString) where
 -- Convert a graph Type into a Displayable plot
 
 import Graph.Internal
