@@ -1,8 +1,5 @@
 module Main where
 
-import Control.Monad
-import System.Environment
-
 --import all our files
 import Graph.Internal
 import Graph.Build
@@ -15,15 +12,21 @@ import Files.Serialization
 import Files.CoreIO
 import Utils
 
-main = putStrLn "Test"
-{-
-main :: IO ()
+import Control.Monad
+import System.Environment
+import System.Directory (doesFileExist)
+
+exeName = "runhaskell Main.hs"
+
 main = do
-            x <- getArgs
-            if length x /= 1 
-                then putStrLn "Invalid arg syntax"
-                else let host = head x in
-                        do 
-                            initPing <- pingInt host
-                            start host initPing
-                            -}
+        x <- getArgs
+        if length x == 1
+            then parseArgs x
+            else putStrLn $ " Invalid arguments, expecting \n$> " ++ exeName ++ " \"www.example.com\"\n Or with an IP address:\n$> " ++ exeName ++ " \"128.0.0.1\""
+
+parseArgs :: [String] -> IO ()
+parseArgs (hostOrFile:[]) = do
+    file <- doesFileExist hostOrFile
+    if file
+        then mainInstance hostOrFile
+        else mainLoop hostOrFile

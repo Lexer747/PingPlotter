@@ -25,6 +25,7 @@ graphPrint cX cY g = do
         Just plot -> buffer $ plotToPrintString plot
         -- ^ convert the plot to the string and buffer it to stdout
 
+--Given two conversion functions and a graph, plot the tail of the data to the cmd
 chooseGraphPrint :: (Show a, Enum a, Ord a, Show b, Enum b, Ord b, IOShow a, IOShow b,
     RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) -> Double -> Graph a b -> IO ()
@@ -40,7 +41,7 @@ drawGraph :: Graph TimeStamp Integer -> IO ()
 drawGraph g = do
     graphPrint id fromIntegral g
 
--- Given a Ping graph, draw it to the cmd
+-- Given a Ping graph, draw most of it to the cmd
 chooseDrawGraph :: Double -> Graph TimeStamp Integer -> IO ()
 chooseDrawGraph scale g = do
     chooseGraphPrint id fromIntegral scale g

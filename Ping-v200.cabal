@@ -17,8 +17,8 @@ cabal-version:       >=1.10
 
 executable Ping-v200
   main-is:             Main.hs
-  other-modules: GraphTypes, PingAPI, Utils, GraphBuild, PingTypes, InternalGraph, GraphPlotter
+  other-modules: Graph.Types, Ping.API, Utils, Graph.Build, Ping.Types, Graph.Internal, Graph.Plotter, Files.CoreIO, Files.Serialization, Ping.Graph
   -- other-extensions:
-  build-depends:       base >=4.11 && <4.12, process >=1.6 && <1.7, time >=1.8 && <1.9, array >=0.5 && <0.6, regex-posix >= 0.9, terminal-size >=0.3, dates >=0.2
+  build-depends:       base >=4.11 && <4.12, process >=1.6 && <1.7, time >=1.8 && <1.9, array >=0.5 && <0.6, regex-posix >= 0.9, terminal-size >=0.3, dates >=0.2, binary >= 0.8
   hs-source-dirs: ., src
   default-language:    Haskell2010
