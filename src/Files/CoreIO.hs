@@ -58,9 +58,12 @@ setBuffer i = hSetBuffering stdout (BlockBuffering $ Just i)
 
 --Given a string, compare the length of that string to the buffer size of stdout
 --if its bigger than raise the size to the next power of 2
-adjustBuffer :: String -> IO ()
-adjustBuffer s = let size = length s in
-                 do
+adjustBuffer :: IO ()
+adjustBuffer = do
+    s <- size
+    case s of
+        Nothing -> return ()
+        Just w  ->  let size = (height w) * (width w) in do
                     bufferMode <- hGetBuffering stdout
                     case bufferMode of
                         BlockBuffering (Just x) | x < size  -> setBuffer $ 2 ^ (findBuffer size)
@@ -71,7 +74,7 @@ adjustBuffer s = let size = length s in
 -- this will buffer the entire string before flushing
 buffer :: String -> IO ()
 buffer s = do
-            adjustBuffer s
+            adjustBuffer
             putStr s
             hFlush stdout
 
