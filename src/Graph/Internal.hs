@@ -67,7 +67,7 @@ filterAxis X len window points = filterAxisHelp len window 1 sorted []
 filterAxisHelp :: Integer -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)] -> [(Integer,a)]
 filterAxisHelp _ _ _ [] acc                   = acc
 filterAxisHelp gap window prev ((p,a):ps) acc =
-    if (p > (prev + gap)) && ((p + gap) < window)
+    if (p > (prev + gap)) && ((p + gap) <= window)
         then filterAxisHelp gap window p ps (acc ++ [(p,a)])
         else filterAxisHelp gap window prev ps acc
 

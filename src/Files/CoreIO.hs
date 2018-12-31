@@ -13,7 +13,7 @@ import Control.Concurrent
 import Data.Bits (shiftR)
 
 globalScale :: Double
-globalScale = 1.1
+globalScale = 1.2
 
 --Given two conversion functions and a graph, actually plot the graph to cmd
 graphPrint :: (Show a, Show b, IOShow a, IOShow b, RealFrac x, Enum x, Ord x) =>
