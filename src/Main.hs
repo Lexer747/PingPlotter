@@ -16,7 +16,7 @@ import Control.Monad
 import System.Environment
 import System.Directory (doesFileExist)
 
-exeName = "runhaskell Main.hs"
+exeName = "Ping-v200"
 
 main = do
         x <- getArgs

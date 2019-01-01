@@ -6,8 +6,7 @@ import Graph.Types
 import Ping.Types
 
 import Data.Binary
-import Data.Time.Clock
-import Data.Time.Clock.POSIX
+import Data.Time.Clock (nominalDiffTimeToSeconds, secondsToNominalDiffTime)
 
 --get the Pico number out of the Timestamp so we can serialize that
 instance Binary TimeStamp where

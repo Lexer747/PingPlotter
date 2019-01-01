@@ -1,5 +1,6 @@
-# TODO
+# Did you always want a haskell based command line based ping graphing tool?
 
-Plots pings on the cmd line.
+Of course you did. So i wrote one.
 
-<sub>uwu</sub>
+
+
