@@ -2,7 +2,7 @@ module Graph.Build where
 --this module will build a graph Type from input
 
 import Graph.Types
-import Utils (getMinMax)
+import Utils (getMinMax, takeTail)
 
 --packs a list of (x,y) values into a graph object
 listToGraph :: (Enum a, Ord a, Enum b, Ord b) => [(a,b)] -> Graph a b
@@ -49,3 +49,18 @@ addPoint point = editGraph (++ [point])
 -- add a list of points to a graph
 addPoints :: (Enum a, Ord a, Enum b, Ord b) => [(a,b)] -> Graph a b -> Graph a b
 addPoints points = editGraph (++ points)
+
+--Only take the tail end of graph, based on the window size and a scale value
+chooseGraph :: (Enum a, Ord a, Enum b, Ord b) => Double -> Graph a b -> IO (Graph a b)
+chooseGraph scale g = do
+    numToTake <- getSampleSize scale
+    return $ editGraph (takeTail numToTake) g
+
+getSampleSize :: Double -> IO Int
+getSampleSize scale | scale <= 0 = error "invalid scale called"
+getSampleSize scale | scale >= 5 = error "invalid scale called"
+getSampleSize scale = do
+    s <- size
+    case s of
+        Just window -> return $ ceiling $ ((fromIntegral $ width window) / 3) * scale
+        Nothing     -> error "could not find window size"

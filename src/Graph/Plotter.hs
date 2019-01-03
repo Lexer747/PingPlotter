@@ -3,7 +3,7 @@ module Graph.Plotter (graphToPlot, chooseGraphToPlot, plotToPrintString) where
 
 import Graph.Internal
 import Graph.Types
-import Graph.Build (editGraph)
+import Graph.Build
 import Utils
 
 import Data.List
@@ -118,15 +118,5 @@ chooseGraphToPlot :: (Show a, Enum a, Ord a, Show b, Enum b, Ord b, IOShow a, IO
     RealFrac x, Enum x, Ord x) =>
         (a -> x) -> (b -> x) -> Double -> Graph a b -> IO (Maybe Plot)
 chooseGraphToPlot convertX convertY scale g = do
-    numToTake <- getSampleSize scale
-    let newG = editGraph (takeTail numToTake) g
+    newG <- chooseGraph scale g
     graphToPlot convertX convertY newG
-
-getSampleSize :: Double -> IO Int
-getSampleSize scale | scale <= 0 = error "invalid scale called"
-getSampleSize scale | scale >= 5 = error "invalid scale called"
-getSampleSize scale = do
-    s <- size
-    case s of
-        Just window -> return $ ceiling $ ((fromIntegral $ width window) / 3) * scale
-        Nothing     -> error "could not find window size"
