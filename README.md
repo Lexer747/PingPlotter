@@ -13,6 +13,13 @@ $ git clone https://github.com/Lexer747/PingPlotter.git
 $ cd /PingPlotter/
 PingPlotter> $ cabal run "www.google.com"
 ```
+Or
+``` shell
+$ git clone https://github.com/Lexer747/PingPlotter.git
+$ cd /PingPlotter/src/
+PingPlotter> $ runhaskell Main.hs "www.google.com"
+```
+
 3. Use at your own risk!
 
 ### Demo

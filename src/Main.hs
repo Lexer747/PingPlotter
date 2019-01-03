@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Main where
 
 --import all our files
@@ -15,8 +17,9 @@ import Utils
 import Control.Monad
 import System.Environment
 import System.Directory (doesFileExist)
+import Control.Exception
 
-exeName = "Ping-v200"
+exeName = "Ping-v2-0-0"
 
 main = do
         x <- getArgs
@@ -28,5 +31,6 @@ parseArgs :: [String] -> IO ()
 parseArgs (hostOrFile:[]) = do
     file <- doesFileExist hostOrFile
     if file
-        then mainInstance hostOrFile
+        then catch (mainInstance hostOrFile)
+                   (\(e :: AsyncException) -> return ())
         else mainLoop hostOrFile
