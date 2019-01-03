@@ -79,6 +79,11 @@ buffer s = do
             putStr s
             hFlush stdout
 
+--repeat capturing a ping forever, but add on to a previous file
+mainLoopWithPreserve :: String -> IO ()
+mainLoopWithPreserve host = do
+                                innerLoop $ readPingGraph $ host ++ ".ping"
+
 --repeat capturing a ping forever
 mainLoop :: String -> IO ()
 mainLoop host = do
