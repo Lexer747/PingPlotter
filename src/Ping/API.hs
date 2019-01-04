@@ -1,16 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-} --for exceptions
-{-# LANGUAGE CPP #-} --for windows/linux differntation
+{-# LANGUAGE CPP #-} --for windows/linux differentiation
 
 module Ping.API
     (pingInt
     , clear
     ) where
---communicate with underlying OS to get ping values, currently very windows specific
+--communicate with underlying OS to get ping values
 
 import System.Process
---import System.Environment
 import Text.Regex.Posix
---import GHC.IO.Handle
 import Control.Exception --for catching errors
 
 --literally call the windows ping CLI program
@@ -27,14 +25,15 @@ parsePingString s = do
     let matched = (result =~ groupRegex :: String) =~ countRegex :: String
     return matched
 
-
 countRegex :: String
 countRegex = "[0-9]+"
 
+---------- Define the paths and relevant strings to communicate with the OS ------------
 pingExeStr :: String
 pingExeOption :: String
 groupRegex :: String
 
+----- For windows: ------
 #ifdef mingw32_HOST_OS
 pingExeStr = "C:\\Windows\\System32\\PING.EXE"
 pingExeOption = "-n"
@@ -42,10 +41,12 @@ groupRegex = "time[=<][0-9]+ms"
 
 #else
 
+----- For Linux: ------
 pingExeStr = "/bin/ping"
 pingExeOption = "-c"
 groupRegex = "time=[0-9]+.[0-9]+ ms"
 #endif
+----------------------------------------------------------------------------------------
 
 --Combine all the functions
 --given a host return the IO wrapped ping value
