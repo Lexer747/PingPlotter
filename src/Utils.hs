@@ -34,17 +34,18 @@ rm (x:y:xs)
     | x == y = rm (y:xs)
     | otherwise = x:(rm (y:xs))
 
-rmdup (x:xs) | x `elem` xs = rmdup xs
-             | otherwise   = x:(rmdup xs)
-rmdup []                   = []
-
 -- taking things out of tuples
+right :: (a,b) -> b
 right (_,x) = x
+
+left :: (a,b) -> a
 left (x,_)  = x
 
 --ceiling integer division
 divide :: Integral a => a -> a -> a
 divide x y = ceiling $ (fromIntegral x) / (fromIntegral y)
+
+(\\) :: Integral a => a -> a -> a
 (\\) = divide --infix
 
 -- takes a list an returns a tuple containing the smallest and largest element
@@ -77,7 +78,7 @@ mapA f w xs = map (asymmetric f w) xs
 
 -- O(n) removal of the last char
 removeLast :: String -> String
-removeLast (x:[])   = []
+removeLast (_:[])   = []
 removeLast (x:xs)   = x:(removeLast xs)
 removeLast []       = []
 

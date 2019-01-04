@@ -43,8 +43,8 @@ getInitGraph host = do
 
 --given a graph created by 'initGraph' add another ping to its set
 addPing ::  IO (Graph TimeStamp Integer) -> IO (Graph TimeStamp Integer)
-addPing graph = do
-    g <- graph
+addPing startG = do
+    g <- startG
     p <- getPing $ title g
     return $ addPoint p g
 

@@ -2,11 +2,9 @@ module Files.CoreIO where
 
 import Graph.Types
 import Graph.Plotter
-import Graph.Internal
 import Graph.Build (chooseGraph)
 import Ping.Types
 import Ping.Graph
-import Ping.API
 import Files.Serialization
 
 import System.IO
@@ -65,12 +63,12 @@ adjustBuffer = do
     s <- size
     case s of
         Nothing -> return ()
-        Just w  ->  let size = (height w) * (width w) in do
+        Just w  ->  let cmd = (height w) * (width w) in do
                     bufferMode <- hGetBuffering stdout
                     case bufferMode of
-                        BlockBuffering (Just x) | x < size  -> setBuffer $ 2 ^ (findBuffer size)
-                        BlockBuffering (Just x) | x >= size -> return () --don't change size
-                        _                                   -> setBuffer $ 2 ^ (findBuffer size)
+                        BlockBuffering (Just x) | x < cmd  -> setBuffer $ 2 ^ (findBuffer cmd)
+                        BlockBuffering (Just x) | x >= cmd -> return () --don't change size
+                        _                                   -> setBuffer $ 2 ^ (findBuffer cmd)
 
 -- adjust putStr, to check for buffering
 -- this will buffer the entire string before flushing
@@ -96,8 +94,8 @@ mainLoop host = do
 
 --given a ping graph, add another ping point to it
 innerLoop :: IO (Graph TimeStamp Integer) -> IO ()
-innerLoop graph = do
-                    g <- addPing graph --add the ping
+innerLoop startG = do
+                    g <- addPing startG --add the ping
                     saveGraph g --save the graph to file (forces evaluation)
                     newG <- readPingGraph (saveLocation g) --read the new graph
                     threadDelay 50
@@ -106,8 +104,8 @@ innerLoop graph = do
 
 
 innerLoopNoSave :: IO (Graph TimeStamp Integer) -> IO ()
-innerLoopNoSave graph = do
-                    g <- addPing graph
+innerLoopNoSave startG = do
+                    g <- addPing startG
                     g' <- chooseGraph globalScale g
                     saveGraph g'
                     newG <- readPingGraph (saveLocation g')

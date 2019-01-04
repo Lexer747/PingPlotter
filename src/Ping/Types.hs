@@ -2,13 +2,10 @@ module Ping.Types where
 -- All the types we need to store Pings
 
 import Graph.Types
-import Graph.Build
-import Ping.API
 import Utils (wordsWhen)
 
-import Data.Time.Clock
-import Data.Time.Clock.POSIX
-import Data.Time.LocalTime
+import Data.Time.Clock.POSIX (POSIXTime, posixSecondsToUTCTime, getPOSIXTime)
+import Data.Time.LocalTime (utcToLocalTime, getCurrentTimeZone)
 
 -- encapsulate the POSIXTime Stamp so we can change the show function hehe
 -- probably a better way than this

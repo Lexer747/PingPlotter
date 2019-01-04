@@ -14,20 +14,22 @@ import Files.Serialization
 import Files.CoreIO
 import Utils
 
-import Control.Monad
 import System.Environment
 import System.Directory (doesFileExist, removePathForcibly)
 import Control.Exception
 
 ---------------------------------- constants ----------------------------------
 
+exeName :: String
 exeName = "Ping-v2-0-0"
+
 cmdMaxWidth :: Int
 cmdMaxWidth = 70
 
 --------------------------------------------------------------------------------
 
 --keep the main simple
+main :: IO ()
 main = do
         x <- getArgs
         parseArgs x
@@ -52,6 +54,9 @@ parseArgs (hostOrFile:[])        = case (parseOption hostOrFile) of
 --Exactly 0 arguments:
 parseArgs []                     = parseError
 
+-- Any other number of arguments
+parseArgs _                      = parseError
+
 --Given a string attempt to match it to one of the options
 parseOption :: String -> Maybe Option
 parseOption ('-':'-':long)  = case (filter (\((_,l,_),_) -> l == long) options) of
@@ -65,6 +70,7 @@ parseOption ('-':short)     = case (filter (\((s,_,_),_) -> s == short) options)
 parseOption _               = Nothing
 
 --Shorter name for when the user does something wrong
+parseError :: IO ()
 parseError = putStr helpString
 
 -----------------------------------------------------------------------------------
@@ -86,7 +92,7 @@ handleArgs Preserve hostOrFile = do
 --NoSave, so we need a different interrupt handler, and different loop
 handleArgs NoSave hostOrFile   = handleFile mainLoopWithNoSaveFinally hostOrFile
     where mainLoopWithNoSaveFinally xs = catch (mainLoopWithNoSave xs)
-                                               (\(e :: AsyncException) -> removePathForcibly $ hostOrFile ++ ".ping")
+                                               (\(_ :: AsyncException) -> removePathForcibly $ hostOrFile ++ ".ping")
 
 handleArgs Help _              = parseError
 
@@ -134,9 +140,9 @@ data Flag = Help
 --given an starting indent, a max command line size, and an option.
 --Create the string to explain and document the option
 printOption :: String -> Int -> Option -> String
-printOption indent maxWidth ((small,large,_),usage) = lead ++ (wrap init maxWidth usage)
+printOption indent maxWidth ((small,large,_),usage) = lead ++ (wrap initIndent maxWidth usage)
     where lead = indent ++ "-" ++ small ++ " --" ++ large ++ ": "
-          init = length lead
+          initIndent = length lead
 
 --Given an indent, a max width, and a string, reformat the string to wrap every time it exceeds
 --the max width, with the indent on each new line.
@@ -156,4 +162,4 @@ wrap_ indent maxWidth toWrap  = spaces ++ take (maxWidth - indent) toWrap ++ "\n
 --A default handling of user interrupts
 cntrlC :: IO () -> IO ()
 cntrlC action = catch (action)
-                      (\(e :: AsyncException) -> return ())
+                      (\(_ :: AsyncException) -> return ())

@@ -4,8 +4,9 @@ module Graph.Internal
     ) where
 
 import Graph.Types
-import Graph.Build
 import Utils
+
+import Prelude hiding (min, max)
 
 -- given an x, between a range a and b. Scale x so that it is the same ratio between a new range c and d.
 -- where x = cur, a = min, b = max, c = newMin, d = newMax, and the result is scaled x
@@ -24,7 +25,7 @@ processSet cX cY h w x x' y y' set = processSetHelp cX cY h w x x' y y' set []
 processSetHelp :: (RealFrac x, Enum x, Ord x) =>
     (a -> x) -> (b -> x) ->
     x -> x -> a -> a -> b -> b -> [(a,b)] -> [((x,x),(a,b))] -> [((x,x),(a,b))] 
-processSetHelp cX cY h w x x' y y' [] acc = acc --base case
+processSetHelp _ _ _ _ _ _ _ _ [] acc = acc --base case
 processSetHelp cX cY h w x x' y y' ((a,b):set) acc = processSetHelp cX cY h w x x' y y' set newAcc
     where newX = normalize (cX x) (cX x') 1 (w - 1) (cX a) --scale the x value
           newY = normalize (cY y) (cY y') 1 (h - 1) (cY b) --scale the y value
@@ -60,33 +61,33 @@ getLines _ _ = []
 
 -- filter out the points which are too close too each other, or spill off the end
 filterAxis :: Axis -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)]
-filterAxis Y _   window points = filterAxisHelp 1 window 1 sorted []
+filterAxis Y _   wndw points = filterAxisHelp 1 wndw 1 sorted []
     where sorted = mySort (\(x,_) (y,_) -> x > y) points
-filterAxis X len window points = filterAxisHelp len window 1 sorted []
+filterAxis X len wndw points = filterAxisHelp len wndw 1 sorted []
     where sorted = mySort (\(x,_) (y,_) -> x > y) points
 
 filterAxisHelp :: Integer -> Integer -> Integer -> [(Integer,a)] -> [(Integer,a)] -> [(Integer,a)]
 filterAxisHelp _ _ _ [] acc                   = acc
-filterAxisHelp gap window prev ((p,a):ps) acc =
-    if (p > (prev + gap)) && ((p + gap) <= window)
-        then filterAxisHelp gap window p ps (acc ++ [(p,a)])
-        else filterAxisHelp gap window prev ps acc
+filterAxisHelp gap wndw prev ((p,a):ps) acc =
+    if (p > (prev + gap)) && ((p + gap) <= wndw)
+        then filterAxisHelp gap wndw p ps (acc ++ [(p,a)])
+        else filterAxisHelp gap wndw prev ps acc
 
 --Take a graph and a window size, and create an internal graph which has a scaled set to the window size, and
 --intermediate points to draw.
 toInternalPure :: (RealFrac x, Enum x, Ord x, IOShow a, IOShow b) => 
     (a -> x) -> (b -> x) -> Integer -> Integer -> Graph a b -> Window Integer -> InternalGraph a b
-toInternalPure cX cY lenX lenY g window = InternalGraph {
+toInternalPure cX cY lenX lenY g wndw = InternalGraph {
         graph = g,
-        xAxisData = filterAxis X lenX (width window) xAxisDataList,
-        yAxisData = filterAxis Y lenY (height window) yAxisDataList,
+        xAxisData = filterAxis X lenX (width wndw) xAxisDataList,
+        yAxisData = filterAxis Y lenY (height wndw) yAxisDataList,
         plottingSet = plotset,
         lineSet = mapA (mapS round) (gradient) $ getLines 1 scaledSet,
-        window = window
+        window = wndw
     }
     where
-        h = fromIntegral $ height window --height must be the same type as the 'y' values
-        w = fromIntegral $ width window --width must be the same type as the 'x' values
+        h = fromIntegral $ height wndw --height must be the same type as the 'y' values
+        w = fromIntegral $ width wndw --width must be the same type as the 'x' values
         processedSet = processSet cX cY h w (minX g) (maxX g) (minY g) (maxY g) (dataSet g)
         -- ^ scales the points in the graph to fit inside the window
         roundedSet = roundProcessedSet processedSet --rounds the scaled points to fit on specific pixels
@@ -114,7 +115,7 @@ toInternal cX cY g = do
     let lenY = fromIntegral $ length lY
     s <- size --from System.Console.Terminal.Size
     case s of
-        Just window -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize window)
+        Just wndw -> return $ Just $ toInternalPure cX cY lenX lenY g (adjustSize wndw)
         Nothing -> return Nothing
 
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over

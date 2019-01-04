@@ -1,6 +1,7 @@
 module Files.Serialization
-    (saveGraph, readPingGraph)
-where
+    (saveGraph,
+    readPingGraph
+    ) where
 
 import Graph.Types
 import Ping.Types

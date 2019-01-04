@@ -29,16 +29,16 @@ namedListToGraph list name (xaxis,yaxis) file = Graph {
         (ymin, ymax) = ensureGap $ getMinMax y
 
 ensureGap :: (Enum a, Ord a) => (a,a) -> (a,a)
-ensureGap (min,max) | min == max            = (pred min, succ max) --if equal, make a gap of 1
-ensureGap (min,max) | ((succ min) == max)   = (min, succ max) --if gap of 0, make a gap of 1
-ensureGap otherwise                         = otherwise
+ensureGap (x,y) | x == y            = (pred x, succ y) --if equal, make a gap of 1
+ensureGap (x,y) | ((succ x) == y)   = (x, succ y) --if gap of 0, make a gap of 1
+ensureGap x                         = x
 
 -- edit the list of points in the graph with the function, and rebuild the constraint
 -- slow as a whole new graph is made, so an O(n) search occurs for every call
 editGraph :: (Enum a, Ord a, Enum b, Ord b) => ([(a,b)] -> [(a,b)]) -> Graph a b -> Graph a b
-editGraph func graph = namedListToGraph newSet (title graph) (xAxis graph, yAxis graph) (saveLocation graph)
+editGraph func g = namedListToGraph newSet (title g) (xAxis g, yAxis g) (saveLocation g)
     where
-        newSet = func (dataSet graph)
+        newSet = func (dataSet g)
 
 -- some examples of edit graph:
 
@@ -62,5 +62,5 @@ getSampleSize scale | scale >= 5 = error "invalid scale called"
 getSampleSize scale = do
     s <- size
     case s of
-        Just window -> return $ ceiling $ ((fromIntegral $ width window) / 3) * scale
-        Nothing     -> error "could not find window size"
+        Just w  -> return $ ceiling $ ((fromIntegral $ width w) / 3) * scale
+        Nothing -> error "could not find window size"

@@ -10,21 +10,23 @@ import Graph.Types
 import Graph.Build
 import Utils
 
-import Data.List
 import Data.Array
 
 --a plot is a rectangle 2D array of characters
 type Plot = Array Integer (Array Integer Char)
 
 -- chars used for the graph --
+intrapunct :: Char
 intrapunct = '·' --a centralized point
+
+blank :: Char
 blank = ' ' -- a blank char
 ---------------------------------------------------
 
 --initalize an empty plot, fill it with the blank char
 initPlot :: Window Integer -> Plot
-initPlot window = array (0,h) [ (i, (array (0,w) [(i,blank) | i <- [0..w]])) | i <- [0..h]]
-    where (h,w) = ((height window), (width window))
+initPlot wndw = array (0,h) [ (y, (array (0,w) [(x,blank) | x <- [0..w]])) | y <- [0..h]]
+    where (h,w) = ((height wndw), (width wndw))
 
 --convert a plot to a string which concatenates each row with a newline
 plotToPrintString :: Plot -> String
@@ -62,7 +64,7 @@ addGraphToPlot plot g = foldr (\x p -> addPointToPlot x 'X' p) plot (plottingSet
 
 -- fold over the lineSet in the graph and add every point to the plot
 addGradientToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
-addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p -> addPointToPlot x c p) p xs) plot (lineSet g)
+addGradientToPlot plot g = foldr (\(xs,c) p -> foldr (\x p' -> addPointToPlot x c p') p xs) plot (lineSet g)
 
 -- centrally put the title on the plot
 addTitleToPlot :: (Show a, Show b) => Plot -> InternalGraph a b -> Plot
