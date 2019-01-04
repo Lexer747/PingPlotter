@@ -80,8 +80,9 @@ buffer s = do
             putStr s
             hFlush stdout
 
+--repeat capturing a ping forever, but don't save as we go
 mainLoopWithNoSave :: String -> IO ()
-mainLoopWithNoSave = undefined -- TODO
+mainLoopWithNoSave host = innerLoopNoSave $ getInitGraph host
 
 --repeat capturing a ping forever, but add on to a previous file
 mainLoopWithPreserve :: String -> IO ()

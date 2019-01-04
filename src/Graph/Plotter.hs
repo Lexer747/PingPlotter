@@ -14,10 +14,10 @@ type Plot = Array Integer (Array Integer Char)
 
 -- chars used for the graph --
 intrapunct = '·' --a centralized point
-blank = intrapunct--' ' -- a blank char
+blank = ' ' -- a blank char
 ---------------------------------------------------
 
---initalize an empty plot
+--initalize an empty plot, fill it with the blank char
 initPlot :: Window Integer -> Plot
 initPlot window = array (0,h) [ (i, (array (0,w) [(i,blank) | i <- [0..w]])) | i <- [0..h]]
     where (h,w) = ((height window), (width window))
