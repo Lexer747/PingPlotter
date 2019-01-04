@@ -3,6 +3,7 @@ module Files.CoreIO where
 import Graph.Types
 import Graph.Plotter
 import Graph.Internal
+import Graph.Build (chooseGraph)
 import Ping.Types
 import Ping.Graph
 import Ping.API
@@ -22,7 +23,7 @@ graphPrint cX cY g = do
     maybePlot <- graphToPlot cX cY g --plot the graph
     case maybePlot of
         Nothing -> buffer "graphPrint Failed - cause: window size probably failed"
-        Just plot -> buffer $ plotToPrintString plot
+        Just plot -> buffer $ "\n" ++ (plotToPrintString plot) ++ "\n"
         -- ^ convert the plot to the string and buffer it to stdout
 
 --Given two conversion functions and a graph, plot the tail of the data to the cmd
@@ -33,7 +34,7 @@ chooseGraphPrint cX cY scale g = do
     maybePlot <- chooseGraphToPlot cX cY scale g --plot the graph
     case maybePlot of
         Nothing -> buffer "graphPrint Failed - cause: window size probably failed"
-        Just plot -> buffer $ plotToPrintString plot
+        Just plot -> buffer $ "\n" ++ (plotToPrintString plot) ++ "\n"
         -- ^ convert the plot to the string and buffer it to stdout
 
 -- Given a Ping graph, draw it to the cmd
@@ -79,6 +80,9 @@ buffer s = do
             putStr s
             hFlush stdout
 
+mainLoopWithNoSave :: String -> IO ()
+mainLoopWithNoSave = undefined -- TODO
+
 --repeat capturing a ping forever, but add on to a previous file
 mainLoopWithPreserve :: String -> IO ()
 mainLoopWithPreserve host = do
@@ -99,12 +103,16 @@ innerLoop graph = do
                     chooseDrawGraph globalScale newG --actually draw the graph
                     innerLoop $ return newG --repeat with the new graph
 
-singleLoop :: String -> IO ()
-singleLoop host = do
-                    g <- getInitGraph host
-                    saveGraph g
-                    newG <- readPingGraph (saveLocation g)
+
+innerLoopNoSave :: IO (Graph TimeStamp Integer) -> IO ()
+innerLoopNoSave graph = do
+                    g <- addPing graph
+                    g' <- chooseGraph globalScale g
+                    saveGraph g'
+                    newG <- readPingGraph (saveLocation g')
+                    threadDelay 50
                     drawGraph newG
+                    innerLoopNoSave $ return newG
 
 --given a file name draw the graph inside that file
 mainInstance :: String -> IO ()

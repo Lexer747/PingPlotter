@@ -119,5 +119,5 @@ toInternal cX cY g = do
 -- the size function rounds up, so we round down by 1 to ensure our graph will not spill over
 adjustSize :: Window Integer -> Window Integer
 adjustSize win = Window {height = h, width = w}
-    where h = (height win) - 1
-          w = (width win) - 1
+    where h = (height win) - 2
+          w = (width win) - 2

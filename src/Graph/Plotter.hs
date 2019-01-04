@@ -14,7 +14,7 @@ type Plot = Array Integer (Array Integer Char)
 
 -- chars used for the graph --
 intrapunct = '·' --a centralized point
-blank = ' ' -- a blank char
+blank = intrapunct--' ' -- a blank char
 ---------------------------------------------------
 
 --initalize an empty plot

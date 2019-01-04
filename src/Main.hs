@@ -16,7 +16,7 @@ import Utils
 
 import Control.Monad
 import System.Environment
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, removePathForcibly)
 import Control.Exception
 
 ---------------------------------- constants ----------------------------------
@@ -74,14 +74,20 @@ parseError = putStr helpString
 handleArgs :: Flag -> String -> IO ()
 
 --NoOptions, handle the user input using mainLoop to process it
-handleArgs Default hostOrFile  = handleFile mainLoop hostOrFile
+handleArgs Default hostOrFile  = handleFile (cntrlC . mainLoop) hostOrFile
 
 --Preserve, so we check if there is something to preserve
 handleArgs Preserve hostOrFile = do
     file <- doesFileExist $ hostOrFile ++ ".ping"
     if file
-        then handleFile mainLoopWithPreserve hostOrFile --something to preserve
-        else handleFile mainLoop hostOrFile --nothing to preserve
+        then handleFile (cntrlC . mainLoopWithPreserve) hostOrFile --something to preserve
+        else handleFile (cntrlC . mainLoop) hostOrFile --nothing to preserve
+
+--NoSave, so we need a different interrupt handler, and different loop
+handleArgs NoSave hostOrFile   = handleFile mainLoopWithNoSaveFinally hostOrFile
+    where mainLoopWithNoSaveFinally xs = catch (mainLoopWithNoSave xs)
+                                               (\(e :: AsyncException) -> removePathForcibly $ hostOrFile ++ ".ping")
+
 handleArgs Help _              = parseError
 
 --given a way to process a host or file, check if the user directly requested a single file first
@@ -91,8 +97,7 @@ handleFile action hostOrFile = do
     file <- doesFileExist hostOrFile
     if file
         then mainInstance hostOrFile --we have a file
-        else catch (action hostOrFile)
-                   (\(e :: AsyncException) -> return ())
+        else action hostOrFile
 
 --The usage String, documents all the options, and general usage
 helpString :: String
@@ -111,7 +116,7 @@ optionHelp :: Option
 optionHelp = (("h","help", Help), "Show this message")
 
 optionNoSave :: Option
-optionNoSave = (("n","nosave", NoSave), "Will not save a '.ping' file after running, *note* a .ping file is used during execution")
+optionNoSave = (("n","nosave", NoSave), "Will not save a '.ping' file after running, *note* a .ping file is used during execution, hence this will overwrite any current '.ping' file with the same name")
 
 ---------------------------------------------------------------------------
 --Types and functions for dealing with command line options
@@ -145,3 +150,10 @@ wrap_ :: Int -> Int -> String -> String
 wrap_ _      _        []      = []
 wrap_ indent maxWidth toWrap  = spaces ++ take (maxWidth - indent) toWrap ++ "\n" ++ (wrap_ indent maxWidth $ drop (maxWidth - indent) toWrap)
     where spaces = replicate indent ' '
+
+----------------------------------------------------------------------------
+
+--A default handling of user interrupts
+cntrlC :: IO () -> IO ()
+cntrlC action = catch (action)
+                      (\(e :: AsyncException) -> return ())
