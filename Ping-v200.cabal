@@ -19,6 +19,6 @@ executable Ping-v2-0-0
   main-is:             Main.hs
   other-modules: Graph.Types, Ping.API, Utils, Graph.Build, Ping.Types, Graph.Internal, Graph.Plotter, Files.CoreIO, Files.Serialization, Ping.Graph
   -- other-extensions:
-  build-depends:       base >=4.11 && <4.12, process >=1.6 && <1.7, time >=1.9.1, array >=0.5 && <0.6, regex-posix >= 0.9, terminal-size >=0.3, binary >= 0.8, directory >= 1.3
+  build-depends:       base >=4.10 && <4.12, process >=1.6 && <1.7, time >=1.9.1, array >=0.5 && <0.6, regex-posix >= 0.9, terminal-size >=0.3, binary >= 0.8, directory >= 1.3
   hs-source-dirs: ., src
   default-language:    Haskell2010
