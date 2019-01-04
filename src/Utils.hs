@@ -1,5 +1,19 @@
-module Utils (
-    unique, right, left, divide, (\\), getMinMax, mapS, mapA, symmetric, asymmetric, removeLast, wordsWhen, mySort, takeTail
+module Utils
+    (
+    unique,
+    right,
+    left,
+    divide,
+    (\\),
+    getMinMax,
+    mapS,
+    mapA,
+    symmetric,
+    asymmetric,
+    removeLast,
+    wordsWhen,
+    mySort,
+    takeTail
     ) where
 
 import Data.List (sort)

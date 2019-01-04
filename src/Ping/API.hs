@@ -1,8 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-} --for exceptions
 
 module Ping.API
-    (pingInt, clear)
-where
+    (pingInt
+    , clear
+    ) where
 --communicate with underlying OS to get ping values, currently very windows specific
 
 import System.Process

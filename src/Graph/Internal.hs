@@ -1,6 +1,7 @@
-module Graph.Internal 
-    (toInternal, filterAxis) 
-where
+module Graph.Internal
+    (toInternal
+    , filterAxis
+    ) where
 
 import Graph.Types
 import Graph.Build

@@ -1,6 +1,11 @@
-module Graph.Types 
-    (module Graph.Types, Graph(..), InternalGraph(..), Axis(..), IOShow(..), module System.Console.Terminal.Size)
-where
+module Graph.Types
+    (module Graph.Types,
+    Graph(..),
+    InternalGraph(..),
+    Axis(..),
+    IOShow(..),
+    module System.Console.Terminal.Size
+    ) where
 --store the relevant graph Types, also basic graph functions
 
 import System.Console.Terminal.Size
