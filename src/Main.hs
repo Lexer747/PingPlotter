@@ -43,10 +43,10 @@ parseArgs :: [String] -> IO ()
 --  Try to parse the first argument as an option
 parseArgs (option:hostOrFile:[]) = case (parseOption option) of
     Nothing          -> parseError --the first arg wasn't a valid option
-    Just ((_,_,f),_) -> handleArgs f hostOrFile --pass the option and the next arg to the next step
+    Just ((_,_,flag),_) -> handleArgs flag hostOrFile --pass the option and the next arg to the next step
 
 --Exactly 1 argument:
---  Try to parse the first argument as an option, in the case of '-h'
+--  Try to parse the first argument as an option, in the case of a lone help option
 parseArgs (hostOrFile:[])        = case (parseOption hostOrFile) of
     Nothing          -> handleArgs Default hostOrFile --no option so pass to next step
     Just _           -> parseError --ignore what option was parsed, just show help anyway
@@ -56,6 +56,8 @@ parseArgs []                     = parseError
 
 -- Any other number of arguments
 parseArgs _                      = parseError
+
+--------------------------- parsing options -----------------------------------------
 
 --Given a string attempt to match it to one of the options
 parseOption :: String -> Maybe Option
