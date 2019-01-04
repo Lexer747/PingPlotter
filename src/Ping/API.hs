@@ -27,20 +27,24 @@ parsePingString s = do
     let matched = (result =~ groupRegex :: String) =~ countRegex :: String
     return matched
 
-groupRegex :: String
-groupRegex = "time[=<][0-9]+ms"
 
 countRegex :: String
 countRegex = "[0-9]+"
 
 pingExeStr :: String
 pingExeOption :: String
+groupRegex :: String
+
 #ifdef mingw32_HOST_OS
 pingExeStr = "C:\\Windows\\System32\\PING.EXE"
 pingExeOption = "-n"
+groupRegex = "time[=<][0-9]+ms"
+
 #else
+
 pingExeStr = "/bin/ping"
 pingExeOption = "-c"
+groupRegex = "time=[0-9]+.[0-9]+ ms"
 #endif
 
 --Combine all the functions
