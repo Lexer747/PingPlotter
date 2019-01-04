@@ -41,7 +41,6 @@ Since you used it once you'll need this command.
 
 ``` shell
 $ rm -r /PingPlotter/
-
 ```
 
 ### Credits & License
