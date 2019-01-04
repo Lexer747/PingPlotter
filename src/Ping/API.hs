@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-} --for exceptions
+{-# LANGUAGE CPP #-} --for windows/linux differntation
 
 module Ping.API
     (pingInt
@@ -15,7 +16,7 @@ import Control.Exception --for catching errors
 --literally call the windows ping CLI program
 --try catch the program
 ping :: String -> IO String
-ping s = catch (readCreateProcess (proc pingExeStr [s, "-n", "1"]) "")
+ping s = catch (readCreateProcess (proc pingExeStr [s, pingExeOption, "1"]) "")
                (\(_ :: IOException) -> do --should log error
                                         return "") --empty string on ping.exe error
 
@@ -33,7 +34,14 @@ countRegex :: String
 countRegex = "[0-9]+"
 
 pingExeStr :: String
+pingExeOption :: String
+#ifdef mingw32_HOST_OS
 pingExeStr = "C:\\Windows\\System32\\PING.EXE"
+pingExeOption = "-n"
+#else
+pingExeStr = "/bin/ping"
+pingExeOption = "-c"
+#endif
 
 --Combine all the functions
 --given a host return the IO wrapped ping value
