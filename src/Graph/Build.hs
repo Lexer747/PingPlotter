@@ -29,9 +29,9 @@ namedListToGraph list name (xaxis,yaxis) file = Graph {
         (ymin, ymax) = ensureGap $ getMinMax y
 
 ensureGap :: (Enum a, Ord a) => (a,a) -> (a,a)
-ensureGap (x,y) | x == y            = (pred x, succ y) --if equal, make a gap of 1
-ensureGap (x,y) | ((succ x) == y)   = (x, succ y) --if gap of 0, make a gap of 1
-ensureGap x                         = x
+ensureGap (dicx,dic) | dicx == dic          = (pred dicx, succ dic) --if equal, make a gap of 1
+ensureGap (dicx,dic) | ((succ dicx) == dic) = (dicx, succ dic) --if gap of 0, make a gap of 1
+ensureGap dicx                              = dicx
 
 -- edit the list of points in the graph with the function, and rebuild the constraint
 -- slow as a whole new graph is made, so an O(n) search occurs for every call
